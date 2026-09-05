@@ -10,8 +10,8 @@
     <title>Blog | Maurice Sinon</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
-
   <body>
+    <a href="#main-content">Ga naar de inhoud</a>
     <header>
       <div>
         <a href="index.html">Maurice Sinon</a>
@@ -24,6 +24,43 @@
         </nav>
       </div>
     </header>
-    <p>Blog pagina</p>
+    <main id="main-content">
+      <section aria-labelledby="page-title">
+        <p>Notities uit het leerproces</p>
+        <h1 id="page-title">Blog</h1>
+        <p>
+          Korte artikelen over wat ik leer, waar ik tegenaan loop en hoe ik
+          problemen aanpak.
+        </p>
+      </section>
+      <section aria-labelledby="articles-title">
+        <h2 id="articles-title">Laatste artikelen</h2>
+        <div>
+          <article>
+            <div>
+              <h3>Waarom semantische HTML belangrijk is</h3>
+              <p>
+                Een eerste kennismaking met betekenisvolle elementen, structuur
+                en toegankelijkheid.
+              </p>
+            </div>
+            <span>Binnenkort</span>
+          </article>
+          <article>
+            <div>
+              <h3>Mijn eerste stappen met versiebeheer</h3>
+              <p>
+                Wat commits, branches en een duidelijke geschiedenis mij leren
+                over samenwerken.
+              </p>
+            </div>
+            <span>Binnenkort</span>
+          </article>
+        </div>
+      </section>
+    </main>
+    <footer>
+      <div><p>&copy; 2026 Maurice Sinon</p></div>
+    </footer>
   </body>
 </html>
