@@ -1,76 +1,56 @@
 <!doctype html>
 <html lang="nl">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta
-      name="description"
-      content="Wie Maurice is en waar ik als beginnend software engineer aan werk."
-    />
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Wie Maurice is en waar ik als beginnend software engineer aan werk.">
     <title>Whoami | Maurice Sinon</title>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-    <a href="#main-content">Ga naar de inhoud</a>
-    <header>
-      <div>
-        <a href="index.html">Maurice Sinon</a>
-        <nav aria-label="Hoofdnavigatie">
-          <ul>
-            <li><a aria-current="page" href="index.html">Whoami</a></li>
-            <li><a href="projecten.html">Projecten</a></li>
-            <li><a href="blog.html">Blog</a></li>
-          </ul>
-        </nav>
-      </div>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Ga naar de inhoud</a>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a class="site-title" href="index.html">Maurice Sinon</a>
+            <nav aria-label="Hoofdnavigatie">
+                <ul class="nav-list">
+                    <li><a aria-current="page" href="index.html">Whoami</a></li>
+                    <li><a href="projecten.html">Projecten</a></li>
+                    <li><a href="blog.html">Blog</a></li>
+                </ul>
+            </nav>
+        </div>
     </header>
-    <main id="main-content">
-      <section aria-labelledby="intro-title">
-        <p>Persoonlijk portfolio</p>
-        <h1 id="intro-title">Hoi, ik ben Maurice.</h1>
-        <p>
-          Een beginnend software engineer die heel veel motivatie heeft om te
-          leren, uitvoeren en natuurlijk ook programmeren.
-        </p>
-      </section>
-      <div>
-        <section aria-labelledby="about-title">
-          <h2 id="about-title">Wie ben ik?</h2>
-          <p>
-            Ik ben een student aan de Haagse Hogeschool waar ik de opleiding
-            volg om een software engineer te worden.
-          </p>
-          <p>
-            Vanaf een jonge leeftijd was ik al geïnteresseerd in computers,
-            steeds vaker ging ik er mee experimenteren en werken, totdat ik
-            erachter kwam wat programmeren was. Ik werd meteen geobsedeerd en
-            begon verschillende kleine projecten te maken.
-          </p>
-          <p>
-            Nu leer ik hoe ik programmeer op een professionele manier en ook
-            voor producten die echt verandering kunnen maken in de samenleving.
-            Dat is dan ook mijn doel!
-          </p>
-          <p>
-            Op deze site verzamel ik mijn projecten, leerpunten, kleine en ook
-            grote experimenten. De inhoud groeit mee met mijn ontwikkeling.
-          </p>
+    <main id="main-content" class="container page-content">
+        <section class="intro" aria-labelledby="intro-title">
+            <p class="eyebrow">Persoonlijk portfolio</p>
+            <h1 id="intro-title">Hoi, ik ben Maurice.</h1>
+            <p class="lead">Een beginnend software engineer die heel veel motivatie heeft om te leren, uitvoeren en natuurlijk ook programmeren.</p>
         </section>
-        <aside aria-labelledby="skills-title">
-          <h2 id="skills-title">Mijn huidige skills</h2>
-          <ul>
-            <li>HTML &amp; CSS</li>
-            <li>Java</li>
-            <li>Python</li>
-            <li>Git</li>
-          </ul>
-          <a href="mailto:maurice.sinon123@gmail.com">Neem contact op <span aria-hidden="true">→</span></a
-          >
-        </aside>
-      </div>
+        <div class="content-grid">
+            <section aria-labelledby="about-title">
+                <h2 id="about-title">Wie ben ik?</h2>
+                <p>Ik ben een student aan de Haagse Hogeschool waar ik de opleiding volg om een software engineer te worden. </p>
+                <p>Vanaf een jonge leeftijd was ik al geïnteresseerd in computers, steeds vaker ging ik er mee expirimenteren en werken, totdat ik erachter kwam wat programmeren was.
+                    Ik werd meteen geobsedeerd en begon verschillende kleine projecten te maken.</p>
+                    <p> Nu leer ik hoe ik programmeer op een professionele manier en ook voor producten die echt verandering kunnen maken in de samenleving.
+                        Dat is dan ook mijn doel! </p>
+                <p>Op deze site verzamel ik mijn projecten, leerpunten, kleine en ook grote experimenten. De inhoud groeit mee met mijn ontwikkeling.</p>
+            </section>
+            <aside class="info-panel" aria-labelledby="skills-title">
+                <h2 id="skills-title">Mijn huidige skills</h2>
+                <ul class="tag-list">
+                    <li>HTML &amp; CSS</li>
+                    <li>Java</li>
+                    <li>Python</li>
+                    <li>Git</li>
+                </ul>
+                <a class="text-link" href="mailto:mauricesinon@icloud.com">Neem contact op <span aria-hidden="true">→</span></a>
+            </aside>
+        </div>
     </main>
-    <footer>
-      <div><p>&copy; 2026 Maurice Sinon</p></div>
+    <footer class="site-footer">
+        <div class="container"><p>&copy; 2026 Maurice Sinon</p></div>
     </footer>
-  </body>
+</body>
 </html>
