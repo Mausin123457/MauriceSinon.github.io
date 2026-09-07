@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Een overzicht van projecten van Maurice Sinon"
+      content="Een overzicht van projecten van Maurice Sinon."
     />
     <title>Projecten | Maurice Sinon</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
-
   <body>
+    <a class="skip-link" href="#main-content">Ga naar de inhoud</a>
     <header class="site-header">
       <div class="container header-inner">
         <a class="site-title" href="index.html">Maurice Sinon</a>
@@ -24,6 +24,51 @@
         </nav>
       </div>
     </header>
-    <p>Projecten pagina</p>
+    <main id="main-content" class="container page-content">
+      <section class="intro" aria-labelledby="page-title">
+        <p class="eyebrow">Werk in uitvoering</p>
+        <h1 id="page-title">Projecten</h1>
+        <p class="lead">
+          Verschillende projecten die ik heb gemaakt of waar ik aan werk. Hier vind je een overzicht van school- en hobbyprojecten, 
+          met een korte uitleg van het probleem en de oplossing.
+        </p>
+      </section>
+      <section aria-labelledby="projects-title">
+        <h2 id="projects-title">Overzicht</h2>
+        <div class="card-grid">
+          <article class="project-card">
+            <p class="card-label">HTML &amp; CSS</p>
+            <h3>Persoonlijk portfolio</h3>
+            <p>
+              Een toegankelijke, responsive website met semantische HTML en een
+              stylesheet.
+              Deze hele website is het project, waarbij mijn kennis over HTML, CSS en toegankelijkheid wordt toegepast en verbeterd.
+            </p>
+          </article>
+          <article class="project-card">
+            <p class="card-label">C# &amp; design</p>
+            <h3>A Knight's Journey</h3>
+            <p>
+              Een hobbyproject in Godot (C#) waarin ik een 2D metroidvania meets platformer game ontwerp en ontwikkel. Het project komt steeds meer uit de begin fases, en ik leer veel over (game) design en programmeren.
+            </p>
+            <span class="muted">Binnenkort meer</span>
+          </article>
+          <article class="project-card">
+            <p class="card-label">Java &amp; back-end</p>
+            <h3>Hotel Simulator</h3>
+            <p>
+              Een schoolproject waarin ik een hotel simulator heb ontwikkeld in Java. Het project is een simulatie van een hotel, waarin gasten kunnen inchecken, uitchecken en kamers kunnen reserveren.
+              Om zo een hotel layout te kunnen testen, voordat deze gerealiseerd wordt in de praktijk.
+            </p>
+            <a class="text-link" href="hotel_simulator.html"
+              >Lees meer <span aria-hidden="true">→</span></a
+            >
+          </article>
+        </div>
+      </section>
+    </main>
+    <footer class="site-footer">
+      <div class="container"><p>&copy; 2026 Maurice Sinon</p></div>
+    </footer>
   </body>
 </html>
