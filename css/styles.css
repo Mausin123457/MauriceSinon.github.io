@@ -3,7 +3,7 @@
   --muted: #343d42;
   --paper: #f7f5ef;
   --surface: #fffdf8;
-  --accent: #bf4f35;
+  --accent: #64291B;
   --line: #d9d7ce;
   --max-width: 1080px;
 }
@@ -199,6 +199,11 @@ h3 {
     white-space: nowrap;
     border: 0;
   }
+section::after {
+  display: table;
+  clear: both;
+  content: "";
+}
 @media (max-width: 700px) {
   .header-inner,
   .article-preview {
