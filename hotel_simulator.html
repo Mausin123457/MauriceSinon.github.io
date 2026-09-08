@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Een 2D hotel simulator ontwikkeld in Java, met gasten, kamers, reserveringen en evenementen."
+    />
+    <title>Hotel Simulator | Maurice Sinon</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Ga naar de inhoud</a>
+
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="site-title" href="hotel_simulator.html">Maurice Sinon</a>
+        <nav aria-label="Hoofdnavigatie">
+          <ul class="nav-list">
+            <li><a href="index.html">Whoami</a></li>
+            <li><a href="projecten.html">Projecten</a></li>
+            <li><a href="blog.html">Blog</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content" class="container page-content">
+      <article>
+        <section class="intro" aria-labelledby="intro-title">
+          <a href="projecten.html" class="eyebrow">
+            <span aria-hidden="true">←</span> Terug naar projecten
+          </a>
+
+          <h1 id="intro-title">Hotel Simulator in Java</h1>
+
+          <p class="lead">
+            Voor dit schoolproject heb ik een 2D hotel simulator ontwikkeld in
+            Java. In de simulator kunnen gasten inchecken, uitchecken en kamers
+            reserveren.
+          </p>
+
+          <p>
+            Het doel van het project was om te onderzoeken hoe een hotelindeling
+            vooraf getest kan worden. Daarbij heb ik gewerkt aan zowel de
+            functionaliteit van de simulatie als aan een overzichtelijke
+            grafische interface. Dit project was vooral gefocust op het leren
+            van objectgeoriënteerd programmeren, en niet zozeer op de grafische
+            vormgeving.
+          </p>
+
+          <p>
+            <a
+              class="text-link"
+              href="https://github.com/Mausin123457/Hotel-Simulator"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Bekijk het project op GitHub
+              <span class="sr-only">(opent in een nieuw tabblad)</span>
+              <span aria-hidden="true">↗</span>
+            </a>
+          </p>
+        </section>
+
+        <section aria-labelledby="simulation-title">
+          <h2 id="simulation-title">De simulatie</h2>
+
+          <p>
+            Tijdens het spelen wordt het hotel gevuld met gasten die allemaal
+            hun eigen gebeurtenissen hebben. De gebruiker kan de verschillende
+            onderdelen van het hotel volgen en analyseren. Voorbeelden hiervan
+            zijn de statistieken, zie het paneel in de foto hieronder.
+          </p>
+
+          <figure>
+            <img
+              src="images/hotel-simulator-simulatie.png"
+              alt="De hotel simulator terwijl de simulatie bezig is met een statistiek paneel aan de rechterkant."
+            />
+            <figcaption>
+              De hotel simulator tijdens een actieve simulatie met het
+              statistieken paneel aan de rechterkant.
+            </figcaption>
+          </figure>
+        </section>
+
+        <section aria-labelledby="features-title">
+          <h2 id="features-title">Belangrijkste onderdelen</h2>
+
+          <p>
+            Het project bestaat uit verschillende onderdelen die samen de
+            hotelsimulatie vormen:
+          </p>
+
+          <ul>
+            <li>Gasten die kunnen inchecken en uitchecken.</li>
+            <li>Kamers met verschillende statussen.</li>
+            <li>Reserveringen en bezettingsinformatie.</li>
+            <li>
+              Events, zoals een evacuatie, die tijdens de simulatie plaats
+              kunnen vinden.
+            </li>
+            <li>Een grafische interface om het hotel te beheren.</li>
+          </ul>
+        </section>
+
+        <section aria-labelledby="interface-title">
+          <h2 id="interface-title">De gebruikersinterface</h2>
+
+          <p>
+            Het hoofdscherm geeft de gebruiker de keuze om een layout in te
+            laden, instellingen te veranderen en ook shortcuts binnen de
+            simulatie. En als allerbelangrijkste, de gebruiker kan een simulatie
+            starten in zijn of haar gekozen hotel layout.
+          </p>
+
+          <figure>
+            <img
+              src="images/hotel-simulator-hoofdscherm.png"
+              alt="Het hoofdscherm van de hotel simulator"
+            />
+            <figcaption>Het hoofdscherm van de hotel simulator.</figcaption>
+          </figure>
+        </section>
+
+        <section aria-labelledby="learning-title">
+          <h2 id="learning-title">Wat ik heb geleerd</h2>
+
+          <p>
+            Tijdens dit project heb ik geleerd hoe ik een groter Java-project
+            kan opbouwen met meerdere samenwerkende onderdelen. Ik heb geoefend
+            met objectgeoriënteerd programmeren, werken met externe libraries,
+            verschillende design patterns en het schrijven van duidelijke en
+            schone code en tests.
+          </p>
+
+          <p>
+            Daarnaast heeft dit project mij geholpen om beter na te denken over
+            de structuur van een programma en de manier waarop gebruikers met
+            een applicatie werken.
+          </p>
+
+          <p>
+            De grootste uitdaging voor mij in deze simulatie waren de mensen
+            echt laten simuleren en de lift laten werken. Uiteindelijk heb ik
+            voor de mensen een A* algoritme geïmplementeerd, zodat ze een pad
+            kunnen vinden naar hun bestemming. En voor de lift heb ik een
+            systeem gemaakt waarbij de mensen een lift kunnen aanroepen en de
+            mensen zelf kunnen in- en uitstappen. Om de lift daadwerkelijk naar
+            boven en naar beneden te laten gaan, heb ik een algoritme geschreven
+            dat de lift naar de juiste verdieping stuurt op basis van de mensen
+            die in de lift zitten en de mensen die op een verdieping staan te
+            wachten. Dit was allemaal custom geschreven en niet gebaseerd op
+            bestaande libraries of algoritmes. Ik had hier dan ook meerdere
+            klassen voor nodig om dit te realiseren, zoals een LiftService,
+            LiftController en LiftManager. Na veel hoofdpijn, testen, debuggen
+            en herschrijven. Was het mij na een aantal pogingen gelukt om het
+            liftsysteem te laten werken zoals bedoeld.
+          </p>
+
+          <p>
+            Een van de requirements was ook dat de lift sneller was dan de trap
+            en dat de gasten in het hotel een overwogen keuze maakte tussen de
+            twee opties om zoveel mogelijk tijd te besparen. Dit was ook een
+            heel lastig gedeelte, omdat ik hiervoor zelf extra kosten moest
+            geven aan het algoritme voor de lift en de trap, zodat de gasten de
+            juiste keuze maakten in elke situatie. Uiteindelijk is dit mij
+            gelukt en werkt het systeem zoals het hoort.
+          </p>
+        </section>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <p>&copy; 2026 Maurice Sinon</p>
+      </div>
+    </footer>
+  </body>
+</html>

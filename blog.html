@@ -10,13 +10,13 @@
     <title>Blog | Maurice Sinon</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
-
   <body>
-    <header>
-      <div>
-        <a href="index.html">Maurice Sinon</a>
+    <a class="skip-link" href="#main-content">Ga naar de inhoud</a>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="site-title" href="index.html">Maurice Sinon</a>
         <nav aria-label="Hoofdnavigatie">
-          <ul>
+          <ul class="nav-list">
             <li><a href="index.html">Whoami</a></li>
             <li><a href="projecten.html">Projecten</a></li>
             <li><a aria-current="page" href="blog.html">Blog</a></li>
@@ -24,6 +24,43 @@
         </nav>
       </div>
     </header>
-    <p>Blog pagina</p>
+    <main id="main-content" class="container page-content">
+      <section class="intro" aria-labelledby="page-title">
+        <p class="eyebrow">Notities uit het leerproces</p>
+        <h1 id="page-title">Blog</h1>
+        <p class="lead">Lees in deze artikelen hoe ik dingen leer, verbeter en hoe ik problemen
+oplos waar ik tegen aanloop.</p>
+      </section>
+      <section aria-labelledby="articles-title">
+        <h2 id="articles-title">Laatste artikelen</h2>
+        <div class="article-list">
+          <article class="article-preview">
+            <div>
+              <p class="card-label">03 september 2026 · HTML</p>
+              <h3>Waarom semantische HTML belangrijk is</h3>
+              <p>
+                Een eerste kennismaking met betekenisvolle elementen, structuur
+                en toegankelijkheid.
+              </p>
+            </div>
+            <span class="muted">Binnenkort</span>
+          </article>
+          <article class="article-preview">
+            <div>
+              <p class="card-label">In ontwikkeling · Git</p>
+              <h3>Mijn eerste stappen met versiebeheer</h3>
+              <p>
+                Wat commits, branches en een duidelijke geschiedenis mij leren
+                over samenwerken.
+              </p>
+            </div>
+            <span class="muted">Binnenkort</span>
+          </article>
+        </div>
+      </section>
+    </main>
+    <footer class="site-footer">
+      <div class="container"><p>&copy; 2026 Maurice Sinon</p></div>
+    </footer>
   </body>
 </html>
