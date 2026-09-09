@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Waarom semantische HTML belangrijk is voor structuur, toegankelijkheid en vindbaarheid."
+    />
+    <title>Waarom semantische HTML belangrijk is | Maurice Sinon</title>
+    <link rel="stylesheet" href="../css/styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Ga naar de inhoud</a>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="site-title" href="../index.html">Maurice Sinon</a>
+        <nav aria-label="Hoofdnavigatie">
+          <ul class="nav-list">
+            <li><a href="../index.html">Whoami</a></li>
+            <li><a href="./projecten.html">Projecten</a></li>
+            <li><a aria-current="page" href="./blog.html">Blog</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <main id="main-content" class="container page-content">
+      <article class="article-content">
+        <header class="intro">
+          <p class="eyebrow">03 september 2026 · HTML</p>
+          <h1>Waarom semantische HTML belangrijk is</h1>
+          <p class="lead">
+            HTML is meer dan een manier om tekst op een pagina te zetten. Met
+            semantische elementen geef je de inhoud een duidelijke betekenis.
+          </p>
+        </header>
+
+        <p>
+          Toen ik begon met HTML, kon bijna alles een <code>&lt;div&gt;</code>
+          zijn. De pagina zag er dan misschien goed uit, maar de code vertelde
+          niet wat elk onderdeel betekende. Semantische HTML lost dat op: je
+          kiest elementen op basis van hun functie en inhoud.
+        </p>
+
+        <section aria-labelledby="meaning-title">
+          <h2 id="meaning-title">HTML die iets vertelt</h2>
+          <p>
+            Een element als <code>&lt;nav&gt;</code> maakt duidelijk dat er
+            navigatielinks in staan. Een <code>&lt;article&gt;</code> bevat een
+            zelfstandig stuk inhoud en een <code>&lt;footer&gt;</code> bevat
+            informatie die bij een pagina of sectie hoort. Dat is duidelijker
+            voor mensen die de code lezen, maar ook voor browsers en andere
+            programma's.
+          </p>
+          <pre><code>&lt;header&gt;
+	&lt;h1&gt;Mijn blog&lt;/h1&gt;
+	&lt;nav aria-label="Hoofdnavigatie"&gt;...&lt;/nav&gt;
+&lt;/header&gt;
+
+&lt;main&gt;
+	&lt;article&gt;
+		&lt;h2&gt;Mijn eerste artikel&lt;/h2&gt;
+		&lt;p&gt;De inhoud van het artikel staat hier.&lt;/p&gt;
+	&lt;/article&gt;
+&lt;/main&gt;</code></pre>
+        </section>
+
+        <section aria-labelledby="accessibility-title">
+          <h2 id="accessibility-title">Een betere ervaring voor iedereen</h2>
+          <p>
+            Schermlezers gebruiken koppen, landmarks en lijsten om snel door een
+            pagina te navigeren. Wanneer je een knop ook echt als
+            <code>&lt;button&gt;</code> bouwt en navigatie in een
+            <code>&lt;nav&gt;</code> zet, kan ondersteunende technologie de
+            pagina beter uitleggen en bedienen.
+          </p>
+          <p>
+            Semantiek vervangt toegankelijkheidstesten niet, maar het is wel een
+            sterke basis. De juiste elementen geven veel gedrag en context
+            gratis mee, zoals toetsenbordbediening van een echte knop en de
+            betekenis van een formulierlabel.
+          </p>
+        </section>
+
+        <section aria-labelledby="seo-title">
+          <h2 id="seo-title">Ook goed voor onderhoud en vindbaarheid</h2>
+          <p>
+            Een logische structuur maakt een pagina makkelijker te onderhouden.
+            Als de inhoud groeit, weet je sneller waar een nieuwe sectie hoort.
+            Zoekmachines krijgen daarnaast betere aanwijzingen over de
+            belangrijkste inhoud van de pagina. Semantische HTML is dus geen
+            trucje voor een hogere positie, maar duidelijke informatie die zowel
+            mensen als machines kunnen begrijpen.
+          </p>
+        </section>
+
+        <section aria-labelledby="takeaway-title">
+          <h2 id="takeaway-title">Mijn belangrijkste les</h2>
+          <p>
+            Begin bij de betekenis van je inhoud en kies daarna pas de
+            presentatie. Gebruik een <code>&lt;h1&gt;</code> voor de
+            belangrijkste titel, koppen in een logische volgorde en elementen
+            zoals <code>&lt;main&gt;</code>, <code>&lt;section&gt;</code> en
+            <code>&lt;footer&gt;</code> waar ze passen. Een pagina wordt daar
+            niet alleen netter van in de broncode: hij wordt robuuster,
+            toegankelijker en makkelijker uit te breiden.
+          </p>
+        </section>
+
+        <a class="text-link" href="./blog.html"
+          >&larr; Terug naar alle artikelen</a
+        >
+      </article>
+    </main>
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <p>&copy; 2026 Maurice Sinon</p>
+        <p>
+          <a
+            class="text-link"
+            id="footer-mail"
+            href="mailto:mauricesinon@icloud.com"
+            >mauricesinon@icloud.com</a
+          >
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -176,6 +176,33 @@ h3 {
   gap: 1rem;
   max-width: 800px;
 }
+.article-content {
+  max-width: 760px;
+}
+.article-content section {
+  margin-top: 3rem;
+}
+.article-content p {
+  max-width: 70ch;
+}
+.article-content code {
+  padding: 0.1rem 0.25rem;
+  background: #ebe8df;
+  font-family: Consolas, "Liberation Mono", monospace;
+  font-size: 0.9em;
+}
+.article-content pre {
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  background: #ebe8df;
+}
+.article-content pre code {
+  padding: 0;
+  background: transparent;
+  font-size: 0.85rem;
+}
 .article-preview {
   display: flex;
   align-items: flex-start;
