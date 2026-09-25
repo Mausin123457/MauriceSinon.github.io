@@ -242,22 +242,31 @@ const renderSong = (song, result) => {
   result.replaceChildren(card);
 };
 
+let musicRequestId = 0;
+let musicRequestController;
+
 const searchMusic = async (query) => {
   const status = document.querySelector("#music-status");
   const result = document.querySelector("#music-result");
   if (!status || !result) return;
+  const requestId = ++musicRequestId;
+  musicRequestController?.abort();
+  musicRequestController = new AbortController();
+  const { signal } = musicRequestController;
   status.textContent = "Muziek wordt geladen...";
   result.replaceChildren();
   try {
     const endpoint = `https://saavnapi-nine.vercel.app/result/?query=${encodeURIComponent(query)}&lyrics=true`;
-    const response = await fetch(endpoint);
+    const response = await fetch(endpoint, { signal });
     if (!response.ok) throw new Error("API response was not successful");
     const songs = await response.json();
+    if (requestId !== musicRequestId) return;
     const song = songs[0];
     if (!song) throw new Error("No song found");
     renderSong(song, result);
     status.textContent = `${songs.length} resultaat/resultaten gevonden.`;
   } catch (error) {
+    if (requestId !== musicRequestId || error.name === "AbortError") return;
     status.textContent =
       "De muziekgegevens konden niet worden geladen. Controleer je zoekterm en probeer het opnieuw.";
   }
