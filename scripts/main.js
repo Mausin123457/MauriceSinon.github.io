@@ -129,17 +129,21 @@ const renderBlogs = () => {
   if (!list) return;
   list.replaceChildren(
     ...blogPosts.map((post) => {
-      const article = createElement("article", null, "article-preview");
+      const article = createElement("details", null, "article-preview");
+      const summary = createElement("summary");
       const content = createElement("div");
-      content.append(
-        createElement("p", `${post.date} · ${post.category}`, "card-label"),
-        createElement("h3", post.title),
-        createElement("p", post.description),
+      const title = createElement("span", post.title, "article-title");
+      title.setAttribute("role", "heading");
+      title.setAttribute("aria-level", "3");
+      summary.append(
+        createElement("span", `${post.date} · ${post.category}`, "card-label"),
+        title,
       );
+      content.append(createElement("p", post.description));
       post.paragraphs.forEach((paragraph) =>
         content.append(createElement("p", paragraph)),
       );
-      article.append(content);
+      article.append(summary, content);
       return article;
     }),
   );

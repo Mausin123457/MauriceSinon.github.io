@@ -155,7 +155,7 @@ h3 {
   font-weight: bold;
   text-underline-offset: 0.2em;
 }
-#footer-mail{
+#footer-mail {
   margin-top: 0;
 }
 .card-grid {
@@ -383,10 +383,47 @@ h3 {
   font-size: 0.85rem;
 }
 .article-preview {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 2rem;
+  display: block;
+  position: relative;
+}
+.article-preview summary {
+  position: relative;
+  cursor: pointer;
+  list-style: none;
+}
+.article-preview summary::-webkit-details-marker {
+  display: none;
+}
+.article-preview summary::before {
+  position: absolute;
+  top: 50%;
+  right: -1.5rem;
+  color: var(--accent);
+  content: "›";
+  font-size: 1.5rem;
+  line-height: 1;
+  transform: translateY(-50%);
+}
+.article-preview[open] summary::before {
+  transform: translateY(-50%) rotate(90deg);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .article-preview summary::before {
+    transition: transform 0.2s ease-in-out;
+  }
+}
+.article-preview summary .card-label,
+.article-preview summary .article-title {
+  display: block;
+}
+.article-preview summary .article-title {
+  margin-top: 0.25rem;
+  font-size: 1.3rem;
+  font-weight: bold;
+  line-height: 1.15;
+}
+.article-preview[open] > div {
+  margin-top: 1rem;
 }
 .site-footer {
   border-top: 1px solid var(--line);
@@ -421,6 +458,7 @@ h3 {
 }
 .social-list a {
   text-underline-offset: 0.2em;
+}
 .footer-inner {
   display: flex;
   align-items: center;
