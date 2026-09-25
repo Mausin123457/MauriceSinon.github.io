@@ -303,6 +303,8 @@ const setupFooterContact = () => {
       validateFooterField(message, "Schrijf minimaal 10 tekens.") &&
       message.value.trim().length >= 10;
     if (!messageValid && message.value.trim().length > 0) {
+      message.classList.add("has-error");
+      message.setAttribute("aria-invalid", "true");
       document.querySelector("#footer-message-error").textContent =
         "Je bericht moet minimaal 10 tekens bevatten.";
     }
