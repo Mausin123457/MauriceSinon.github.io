@@ -43,6 +43,7 @@ a {
 .skip-link:focus {
   top: 1rem;
   z-index: 2;
+  transition: top 0.2s ease-in-out;
 }
 .site-header {
   border-bottom: 1px solid var(--line);
@@ -153,6 +154,9 @@ h3 {
   color: var(--accent);
   font-weight: bold;
   text-underline-offset: 0.2em;
+}
+#footer-mail{
+  margin-top: 0;
 }
 .card-grid {
   display: grid;
@@ -351,6 +355,33 @@ h3 {
   gap: 1rem;
   max-width: 800px;
 }
+.article-content {
+  max-width: 760px;
+}
+.article-content section {
+  margin-top: 3rem;
+}
+.article-content p {
+  max-width: 70ch;
+}
+.article-content code {
+  padding: 0.1rem 0.25rem;
+  background: #ebe8df;
+  font-family: Consolas, "Liberation Mono", monospace;
+  font-size: 0.9em;
+}
+.article-content pre {
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  background: #ebe8df;
+}
+.article-content pre code {
+  padding: 0;
+  background: transparent;
+  font-size: 0.85rem;
+}
 .article-preview {
   display: flex;
   align-items: flex-start;
@@ -390,6 +421,11 @@ h3 {
 }
 .social-list a {
   text-underline-offset: 0.2em;
+.footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
 }
 :focus-visible {
   outline: 3px solid #e39a45;
@@ -452,4 +488,16 @@ section::after {
     grid-column: 1;
     grid-row: auto;
   }
+}
+
+figure {
+  max-width: 100%;
+  margin: 1.5rem 0;
+}
+
+figure img {
+  display: block;
+  width: 100%;
+  max-width: 600px;
+  height: auto;
 }
