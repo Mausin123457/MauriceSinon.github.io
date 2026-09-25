@@ -1,14 +1,14 @@
 <!doctype html>
 <html lang="nl">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
       content="Blogartikelen over leren programmeren en software engineering."
-    >
+    />
     <title>Blog | Maurice Sinon</title>
-    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/styles.css" />
   </head>
   <body>
     <a class="skip-link" href="#main-content">Ga naar de inhoud</a>
@@ -28,39 +28,95 @@
       <section class="intro" aria-labelledby="page-title">
         <p class="eyebrow">Notities uit het leerproces</p>
         <h1 id="page-title">Blog</h1>
-        <p class="lead">Lees in deze artikelen hoe ik dingen leer, verbeter en hoe ik problemen
-oplos waar ik tegen aanloop.</p>
+        <p class="lead">
+          Lees in deze artikelen hoe ik dingen leer, verbeter en hoe ik
+          problemen oplos waar ik tegen aanloop.
+        </p>
       </section>
       <section aria-labelledby="articles-title">
         <h2 id="articles-title">Laatste artikelen</h2>
-        <div class="article-list">
-          <article class="article-preview">
-            <div>
-              <p class="card-label">03 september 2026 · HTML</p>
-              <h3>Waarom semantische HTML belangrijk is</h3>
-              <p>
-                Een eerste kennismaking met betekenisvolle elementen, structuur
-                en toegankelijkheid.
-              </p>
-            </div>
-            <span class="muted">Binnenkort</span>
-          </article>
-          <article class="article-preview">
-            <div>
-              <p class="card-label">In ontwikkeling · Git</p>
-              <h3>Mijn eerste stappen met versiebeheer</h3>
-              <p>
-                Wat commits, branches en een duidelijke geschiedenis mij leren
-                over samenwerken.
-              </p>
-            </div>
-            <span class="muted">Binnenkort</span>
-          </article>
-        </div>
+        <div id="blog-list" class="article-list"></div>
       </section>
     </main>
     <footer class="site-footer">
-      <div class="container"><p>&copy; 2026 Maurice Sinon</p></div>
+      <div class="container footer-grid">
+        <div>
+          <p>&copy; 2026 Maurice Sinon</p>
+          <p>
+            <a href="mailto:mauricesinon@icloud.com">mauricesinon@icloud.com</a>
+          </p>
+        </div>
+        <form id="footer-contact-form" class="footer-contact-form" novalidate>
+          <fieldset>
+            <legend>Snel contact</legend>
+            <div class="footer-fields">
+              <div>
+                <label for="footer-name">Naam</label
+                ><input
+                  id="footer-name"
+                  name="name"
+                  type="text"
+                  autocomplete="name"
+                  required
+                  aria-describedby="footer-name-error"
+                />
+                <p
+                  id="footer-name-error"
+                  class="field-error"
+                  aria-live="polite"
+                ></p>
+              </div>
+              <div>
+                <label for="footer-email">E-mailadres</label
+                ><input
+                  id="footer-email"
+                  name="email"
+                  type="email"
+                  autocomplete="email"
+                  required
+                  aria-describedby="footer-email-error"
+                />
+                <p
+                  id="footer-email-error"
+                  class="field-error"
+                  aria-live="polite"
+                ></p>
+              </div>
+            </div>
+            <label for="footer-message">Bericht</label
+            ><textarea
+              id="footer-message"
+              name="message"
+              rows="2"
+              required
+              aria-describedby="footer-message-error"
+            ></textarea>
+          </fieldset>
+          <div class="footer-form-row">
+            <button class="button" type="submit">Verstuur</button>
+          </div>
+          <p
+            id="footer-message-error"
+            class="field-error"
+            aria-live="polite"
+          ></p>
+          <p
+            id="footer-form-feedback"
+            class="form-feedback"
+            role="status"
+            aria-live="polite"
+          ></p>
+        </form>
+        <div>
+          <p class="footer-heading">Socials</p>
+          <ul class="social-list">
+            <li><a href="#">LinkedIn</a></li>
+            <li><a href="#">GitHub</a></li>
+            <li><a href="#">Instagram</a></li>
+          </ul>
+        </div>
+      </div>
     </footer>
+    <script type="module" src="../scripts/main.js"></script>
   </body>
 </html>
