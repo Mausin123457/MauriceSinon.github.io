@@ -224,11 +224,18 @@ const renderSong = (song, result) => {
     ),
   );
   if (song.perma_url) {
-    const link = createElement("a", "Bekijk op JioSaavn ↗", "text-link");
-    link.href = song.perma_url;
-    link.target = "_blank";
-    link.rel = "noopener noreferrer";
-    lyrics.append(link);
+    try {
+      const url = new URL(song.perma_url, window.location.href);
+      if (url.protocol === "http:" || url.protocol === "https:") {
+        const link = createElement("a", "Bekijk op JioSaavn ↗", "text-link");
+        link.href = url.href;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        lyrics.append(link);
+      }
+    } catch {
+      // Ignore malformed URLs from the API.
+    }
   }
   details.append(lyrics);
   card.append(image, details);
