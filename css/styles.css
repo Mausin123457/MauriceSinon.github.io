@@ -403,10 +403,14 @@ h3 {
   font-size: 1.5rem;
   line-height: 1;
   transform: translateY(-50%);
-  transition: transform 0.2s ease-in-out;
 }
 .article-preview[open] summary::before {
   transform: translateY(-50%) rotate(90deg);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .article-preview summary::before {
+    transition: transform 0.2s ease-in-out;
+  }
 }
 .article-preview summary .card-label,
 .article-preview summary .article-title {
