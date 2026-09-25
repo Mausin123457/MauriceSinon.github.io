@@ -132,9 +132,12 @@ const renderBlogs = () => {
       const article = createElement("details", null, "article-preview");
       const summary = createElement("summary");
       const content = createElement("div");
+      const title = createElement("span", post.title, "article-title");
+      title.setAttribute("role", "heading");
+      title.setAttribute("aria-level", "3");
       summary.append(
         createElement("span", `${post.date} · ${post.category}`, "card-label"),
-        createElement("span", post.title, "article-title"),
+        title,
       );
       content.append(createElement("p", post.description));
       post.paragraphs.forEach((paragraph) =>
