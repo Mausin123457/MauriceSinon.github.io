@@ -404,7 +404,7 @@ h3 {
   line-height: 1;
   transform: translateY(-50%);
 }
-.article-preview[open] summary::before {
+.article-preview details[open] summary::before {
   transform: translateY(-50%) rotate(90deg);
 }
 @media (prefers-reduced-motion: no-preference) {
@@ -422,7 +422,7 @@ h3 {
   font-weight: bold;
   line-height: 1.15;
 }
-.article-preview[open] > div {
+.article-preview details[open] > div {
   margin-top: 1rem;
 }
 .site-footer {
