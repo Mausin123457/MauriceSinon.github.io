@@ -38,6 +38,7 @@ const blogPosts = [
       "Semantische HTML helpt bezoekers die met een schermlezer navigeren, maar maakt een pagina ook overzichtelijker voor ontwikkelaars. De structuur van de code vertelt meteen welke onderdelen belangrijk zijn.",
       "Daarom gebruik ik op deze portfoliosecties onder andere main, section, article, header en footer. CSS bepaalt de vormgeving, terwijl HTML de betekenis en volgorde van de informatie bewaakt.",
     ],
+    link: "../pages/Blog_semantiek.html",
   },
   {
     date: "22-9-2026",
@@ -130,16 +131,29 @@ const renderBlogs = () => {
   list.replaceChildren(
     ...blogPosts.map((post) => {
       const article = createElement("article", null, "article-preview");
+      const details = createElement("details");
+      const summary = createElement("summary");
       const content = createElement("div");
-      content.append(
-        createElement("p", `${post.date} · ${post.category}`, "card-label"),
-        createElement("h3", post.title),
-        createElement("p", post.description),
+      const title = createElement("span", post.title, "article-title");
+      title.setAttribute("role", "heading");
+      title.setAttribute("aria-level", "3");
+      summary.append(
+        createElement("span", `${post.date} · ${post.category}`, "card-label"),
+        title,
       );
+      content.append(createElement("p", post.description));
       post.paragraphs.forEach((paragraph) =>
         content.append(createElement("p", paragraph)),
       );
-      article.append(content);
+      details.append(summary, content);
+      if (post.link) {
+        const link = createElement("a", "Lees meer →", "text-link");
+        link.href = post.link;
+        details.append(link);
+      } else {
+        details.append(createElement("span", "Binnenkort meer", "muted"));
+      }
+      article.append(details);
       return article;
     }),
   );
@@ -153,41 +167,6 @@ const validateField = (field, message) => {
   field.setAttribute("aria-invalid", String(!isValid));
   error.textContent = isValid ? "" : message;
   return isValid;
-};
-
-const setupContactForm = () => {
-  const form = document.querySelector("#contact-form");
-  if (!form) return;
-  form.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const messageIsValid = validateField(
-      form.elements.message,
-      "Schrijf een bericht van minimaal één zin.",
-    );
-    if (messageIsValid && form.elements.message.value.trim().length < 10) {
-      const messageError = document.querySelector("#message-error");
-      messageError.textContent = "Je bericht moet minimaal 10 tekens bevatten.";
-      form.elements.message.classList.add("has-error");
-      form.elements.message.setAttribute("aria-invalid", "true");
-    }
-    const valid =
-      [
-        validateField(form.elements.name, "Vul je naam in."),
-        validateField(form.elements.email, "Vul een geldig e-mailadres in."),
-        messageIsValid && form.elements.message.value.trim().length >= 10,
-      ].every(Boolean) && form.elements.message.value.trim().length >= 10;
-    const feedback = document.querySelector("#form-feedback");
-    if (!valid) {
-      feedback.textContent = "Controleer de gemarkeerde velden.";
-      return;
-    }
-    feedback.textContent =
-      "Bedankt voor je bericht. Ik neem zo snel mogelijk contact op.";
-    form.reset();
-    form
-      .querySelectorAll("[aria-invalid]")
-      .forEach((field) => field.setAttribute("aria-invalid", "false"));
-  });
 };
 
 const formatDuration = (seconds) => {
@@ -329,6 +308,5 @@ const setupFooterContact = () => {
 
 setupProjects();
 renderBlogs();
-setupContactForm();
 setupMusic();
 setupFooterContact();
