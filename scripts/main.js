@@ -129,7 +129,7 @@ const renderBlogs = () => {
   if (!list) return;
   list.replaceChildren(
     ...blogPosts.map((post) => {
-      const article = createElement("details", null, "article-preview");
+      const article = createElement("article", null, "article-preview");
       const summary = createElement("summary");
       const content = createElement("div");
       const title = createElement("span", post.title, "article-title");
