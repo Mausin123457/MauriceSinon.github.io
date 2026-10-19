@@ -1,0 +1,14 @@
+@MauriceSinon.Api_HostAddress = http://localhost:5106
+
+GET {{MauriceSinon.Api_HostAddress}}/swagger/index.html
+Accept: application/json
+
+###
+
+GET {{MauriceSinon.Api_HostAddress}}/api/projects
+Accept: application/json
+
+###
+
+GET {{MauriceSinon.Api_HostAddress}}/api/blogposts
+Accept: application/json
