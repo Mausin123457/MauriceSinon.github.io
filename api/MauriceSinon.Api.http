@@ -12,3 +12,19 @@ Accept: application/json
 
 GET {{MauriceSinon.Api_HostAddress}}/api/blogposts
 Accept: application/json
+
+###
+
+# Configure Admin:PasswordHash before using the admin endpoints.
+POST {{MauriceSinon.Api_HostAddress}}/api/admin/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "replace-with-configured-password"
+}
+
+###
+
+# Open the hosted CRUD page in a browser:
+# http://localhost:5106/admin.html

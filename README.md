@@ -29,6 +29,38 @@ dotnet run
 Open daarna `http://localhost:5000/swagger` (de exacte poort staat in de
 terminal). Swagger UI toont alle CRUD-endpoints.
 
+## Adminbeheer en authenticatie
+
+Publieke `GET`-requests blijven beschikbaar. `POST`, `PUT` en `DELETE` voor
+projecten en blogposts vereisen een admin-cookie en een CSRF-token. De
+beheerpagina staat op `http://localhost:5106/admin.html` wanneer de
+developmentserver op de standaardpoort draait.
+
+Configureer het adminaccount buiten Git met environment variables:
+
+```powershell
+$env:Admin__Username = "admin"
+$env:Admin__PasswordHash = "<ASP.NET PasswordHasher hash>"
+dotnet run
+```
+
+De hash moet met `Microsoft.AspNetCore.Identity.PasswordHasher` worden gemaakt;
+zet nooit een plaintext-wachtwoord of een echte hash in
+`appsettings.json`. De standaardconfiguratie bevat bewust geen bruikbare
+hash, waardoor login pas werkt nadat deze variabele is ingesteld.
+
+De beheerpagina gebruikt dezelfde API-origin en HttpOnly/SameSite cookie-auth,
+plus een apart CSRF-token voor wijzigende requests. In development gebruikt de
+app gewone cookie-namen omdat de standaardserver via HTTP draait; op HTTPS
+kunnen deze cookies met een `__Host-`-prefix en `Secure` worden aangescherpt.
+De tests gebruiken een
+geïsoleerde InMemory-database en testen login, autorisatie, CSRF en
+requestvalidatie:
+
+```powershell
+dotnet test .\tests\MauriceSinon.Api.Tests.csproj
+```
+
 ## Architectuur
 
 De backend gebruikt Minimal API met drie herkenbare verantwoordelijkheden:

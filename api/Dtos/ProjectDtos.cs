@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MauriceSinon.Api.Dtos;
 
-public record ProjectDto(
+public sealed record ProjectDto(
     int Id,
     string Title,
     string Description,
@@ -10,20 +10,20 @@ public record ProjectDto(
     string? GitHubUrl,
     DateTime Date);
 
-public class ProjectInputDto
+public sealed record ProjectInputDto
 {
-    [Required, StringLength(200)]
-    public string Title { get; set; } = string.Empty;
+    [Required, StringLength(200, MinimumLength = 1)]
+    public required string Title { get; init; }
 
-    [Required, StringLength(2000)]
-    public string Description { get; set; } = string.Empty;
+    [Required, StringLength(2000, MinimumLength = 1)]
+    public required string Description { get; init; }
 
-    [Required, StringLength(100)]
-    public string Category { get; set; } = string.Empty;
+    [Required, StringLength(100, MinimumLength = 1)]
+    public required string Category { get; init; }
 
     [Url, StringLength(500)]
-    public string? GitHubUrl { get; set; }
+    public string? GitHubUrl { get; init; }
 
     [Required]
-    public DateTime? Date { get; set; }
+    public DateTime? Date { get; init; }
 }

@@ -2,16 +2,16 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MauriceSinon.Api.Dtos;
 
-public record BlogPostDto(int Id, string Title, string Content, DateTime PublicationDate);
+public sealed record BlogPostDto(int Id, string Title, string Content, DateTime PublicationDate);
 
-public class BlogPostInputDto
+public sealed record BlogPostInputDto
 {
-    [Required, StringLength(200)]
-    public string Title { get; set; } = string.Empty;
+    [Required, StringLength(200, MinimumLength = 1)]
+    public required string Title { get; init; }
 
-    [Required, StringLength(10000)]
-    public string Content { get; set; } = string.Empty;
+    [Required, StringLength(10000, MinimumLength = 1)]
+    public required string Content { get; init; }
 
     [Required]
-    public DateTime? PublicationDate { get; set; }
+    public DateTime? PublicationDate { get; init; }
 }

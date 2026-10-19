@@ -34,7 +34,7 @@ public static class BlogPostEndpoints
         {
             var post = await blogPosts.CreateAsync(input, cancellationToken);
             return Results.Created($"/api/blogposts/{post.Id}", post);
-        });
+        }).RequireAuthorization();
 
         group.MapPut("/{id:int}", async (
             int id,
@@ -43,7 +43,7 @@ public static class BlogPostEndpoints
             CancellationToken cancellationToken) =>
             await blogPosts.UpdateAsync(id, input, cancellationToken)
                 ? Results.NoContent()
-                : Results.NotFound());
+                : Results.NotFound()).RequireAuthorization();
 
         group.MapDelete("/{id:int}", async (
             int id,
@@ -51,7 +51,7 @@ public static class BlogPostEndpoints
             CancellationToken cancellationToken) =>
             await blogPosts.DeleteAsync(id, cancellationToken)
                 ? Results.NoContent()
-                : Results.NotFound());
+                : Results.NotFound()).RequireAuthorization();
 
         return endpoints;
     }
