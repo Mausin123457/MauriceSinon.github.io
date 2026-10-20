@@ -64,10 +64,19 @@ const loadPortfolioData = async () => {
     return;
   }
 
-  [projects, blogPosts] = await Promise.all([
-    apiRequest("/api/projects"),
-    apiRequest("/api/blogposts"),
-  ]);
+  try {
+    [projects, blogPosts] = await Promise.all([
+      apiRequest("/api/projects"),
+      apiRequest("/api/blogposts"),
+    ]);
+  } catch (error) {
+    projects = fallbackProjects;
+    blogPosts = fallbackBlogPosts;
+    console.warn(
+      "Portfolio API unavailable; using static fallback data.",
+      error,
+    );
+  }
 };
 
 const createElement = (tag, text, className) => {
@@ -323,21 +332,6 @@ const initializePortfolio = async () => {
     setupProjects();
     renderBlogs();
   } catch (error) {
-    const projectStatus = document.querySelector("#project-status");
-    const blogList = document.querySelector("#blog-list");
-    if (projectStatus) {
-      projectStatus.textContent =
-        "Projecten konden niet worden geladen. Probeer het later opnieuw.";
-    }
-    if (blogList) {
-      blogList.replaceChildren(
-        createElement(
-          "p",
-          "Blogartikelen konden niet worden geladen. Probeer het later opnieuw.",
-          "muted",
-        ),
-      );
-    }
     console.error("Portfolio API unavailable", error);
   }
 };
