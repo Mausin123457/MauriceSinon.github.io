@@ -61,6 +61,33 @@ requestvalidatie:
 dotnet test .\tests\MauriceSinon.Api.Tests.csproj
 ```
 
+## Frontend en API
+
+De publieke project- en blogpagina's laden lokaal hun gegevens met `fetch()`
+uit de API. Lokaal gebruikt de frontend automatisch
+`http://localhost:5106`. Op GitHub Pages gebruikt de frontend voorlopig een
+statische lijst met objecten in `scripts/main.js`, omdat GitHub Pages alleen
+statische bestanden host en geen ASP.NET-backend uitvoert.
+
+Je kunt de frontend daarvoor configureren vóór `scripts/main.js` wordt geladen:
+
+```html
+<script>
+  window.PORTFOLIO_API_URL = "https://api.example.com";
+</script>
+<script type="module" src="./scripts/main.js"></script>
+```
+
+Gebruik op pagina's in `pages/` het juiste relatieve pad naar `main.js`.
+Zolang `PORTFOLIO_API_URL` leeg is op een niet-lokale host, gebruikt de
+frontend deze statische fallbackdata. Zodra er later een publieke API is, kan
+`PORTFOLIO_API_URL` worden ingesteld om de API te gebruiken.
+
+Swagger is alleen beschikbaar als de ASP.NET-host in de `Development`
+environment draait. Een GitHub Pages-deployment verandert de environment van
+de API niet, omdat GitHub Pages de API niet uitvoert; de apart gehoste API moet
+zelf met de gewenste environment worden geconfigureerd.
+
 ## Architectuur
 
 De backend gebruikt Minimal API met drie herkenbare verantwoordelijkheden:

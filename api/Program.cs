@@ -55,8 +55,11 @@ using (var scope = app.Services.CreateScope())
     database.Database.EnsureCreated();
 }
 
-app.UseSwagger();
-app.UseSwaggerUI();
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 app.UseDefaultFiles();
 app.UseStaticFiles();
 app.UseCors("PortfolioFrontend");

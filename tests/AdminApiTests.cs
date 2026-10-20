@@ -90,6 +90,73 @@ public sealed class AdminApiTests(ApiFactory factory) : IClassFixture<ApiFactory
         Assert.Contains("token", await response.Content.ReadAsStringAsync());
     }
 
+    [Fact]
+    public async Task Admin_can_complete_project_crud_cycle()
+    {
+        using var client = CreateAuthenticatedClient();
+        var create = await client.PostAsJsonAsync("/api/projects", ValidProject());
+        var project = await create.Content.ReadFromJsonAsync<ProjectResponse>();
+
+        var update = await client.PutAsJsonAsync($"/api/projects/{project!.Id}", new
+        {
+            title = "Updated project",
+            description = "Updated description",
+            category = "Updated",
+            date = "2026-10-20T11:00:00Z"
+        });
+        var delete = await client.DeleteAsync($"/api/projects/{project.Id}");
+        var missing = await client.GetAsync($"/api/projects/{project.Id}");
+
+        Assert.Equal(HttpStatusCode.NoContent, update.StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, delete.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, missing.StatusCode);
+    }
+
+    [Fact]
+    public async Task Admin_can_complete_blog_post_crud_cycle()
+    {
+        using var client = CreateAuthenticatedClient();
+        var create = await client.PostAsJsonAsync("/api/blogposts", ValidBlogPost());
+        var post = await create.Content.ReadFromJsonAsync<BlogPostResponse>();
+
+        var update = await client.PutAsJsonAsync($"/api/blogposts/{post!.Id}", new
+        {
+            title = "Updated post",
+            content = "Updated content",
+            publicationDate = "2026-10-20T11:00:00Z"
+        });
+        var delete = await client.DeleteAsync($"/api/blogposts/{post.Id}");
+        var missing = await client.GetAsync($"/api/blogposts/{post.Id}");
+
+        Assert.Equal(HttpStatusCode.NoContent, update.StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, delete.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, missing.StatusCode);
+    }
+
+    [Fact]
+    public async Task Invalid_blog_post_is_rejected()
+    {
+        using var client = CreateAuthenticatedClient();
+        var response = await client.PostAsJsonAsync("/api/blogposts", new
+        {
+            title = "",
+            content = "valid content",
+            publicationDate = "2026-10-19T11:00:00Z"
+        });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Swagger_is_not_available_outside_development()
+    {
+        using var client = factory.CreateClient();
+
+        var response = await client.GetAsync("/swagger/index.html");
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
     private HttpClient CreateAuthenticatedClient()
     {
         var client = factory.CreateClient();
@@ -118,5 +185,13 @@ public sealed class AdminApiTests(ApiFactory factory) : IClassFixture<ApiFactory
         date = "2026-10-19T11:00:00Z"
     };
 
+    private static object ValidBlogPost() => new
+    {
+        title = "Test post",
+        content = "A blog post created by an integration test.",
+        publicationDate = "2026-10-19T11:00:00Z"
+    };
+
     private sealed record ProjectResponse(int Id, string Title);
+    private sealed record BlogPostResponse(int Id, string Title);
 }
