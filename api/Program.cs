@@ -43,8 +43,18 @@ builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<IBlogPostService, BlogPostService>();
 builder.Services.AddCors(options =>
 {
+    var allowedOrigins = builder.Configuration
+        .GetSection("Cors:AllowedOrigins")
+        .Get<string[]>();
+    if (allowedOrigins is null || allowedOrigins.Length == 0)
+        throw new InvalidOperationException(
+            "Cors:AllowedOrigins must contain at least one trusted origin.");
+
     options.AddPolicy("PortfolioFrontend", policy =>
-        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+        policy.WithOrigins(allowedOrigins)
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials());
 });
 
 var app = builder.Build();

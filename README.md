@@ -11,10 +11,12 @@ Vereisten:
 - SQL Server Express (de standaardconfiguratie gebruikt de instantie
   `.\SQLEXPRESS`)
 
-De connection string staat in
-[api/appsettings.json](./api/appsettings.json). Deze repository gebruikt de
-lokaal geïnstalleerde SQL Server Express-instantie `.\SQLEXPRESS`. Pas
-`ConnectionStrings:Portfolio` aan wanneer een andere SQL Server-instantie wordt gebruikt.
+De lokale connection string staat in
+[api/appsettings.Development.json](./api/appsettings.Development.json). Deze
+repository gebruikt de lokaal geïnstalleerde SQL Server Express-instantie
+`.\SQLEXPRESS`. Voor andere omgevingen moet
+`ConnectionStrings__Portfolio` via environment variables of secret storage
+worden ingesteld; productieconfiguratie staat niet in Git.
 De API gebruikt
 `Database.EnsureCreated()` bij het starten. Daardoor worden de tabellen
 automatisch aangemaakt als de database nog niet bestaat; er is voor deze
@@ -60,6 +62,18 @@ requestvalidatie:
 ```powershell
 dotnet test .\tests\MauriceSinon.Api.Tests.csproj
 ```
+
+## CORS en production configuratie
+
+CORS staat niet meer open voor alle origins. Development staat alleen de
+gebruikelijke lokale frontendpoorten toe. De basisconfiguratie staat de
+GitHub Pages-origin `https://mausin123457.github.io` toe. Voeg een nieuwe
+frontend-origin alleen toe via `Cors:AllowedOrigins` in de configuratie van de
+betreffende omgeving.
+
+De API gebruikt `ConnectionStrings__Portfolio` en
+`Admin__PasswordHash` voor productiegeheimen. Zet deze niet in
+`appsettings.json` of in frontend-JavaScript.
 
 ## Frontend en API
 

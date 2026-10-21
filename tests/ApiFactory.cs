@@ -17,6 +17,6 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
         builder.UseSetting(
             "Admin:PasswordHash",
             new PasswordHasher<object>().HashPassword(null!, Password));
-
+        builder.UseSetting("AllowedHosts", "*");
     }
 }
