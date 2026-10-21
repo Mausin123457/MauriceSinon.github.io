@@ -1,58 +1,83 @@
-const projects = [
+const API_BASE_URL = window.PORTFOLIO_API_URL ||
+  (["localhost", "127.0.0.1"].includes(window.location.hostname)
+    ? "http://localhost:5106"
+    : "");
+const useApi = Boolean(window.PORTFOLIO_API_URL) ||
+  ["localhost", "127.0.0.1"].includes(window.location.hostname);
+const fallbackProjects = [
   {
-    name: "Persoonlijk portfolio",
+    title: "Persoonlijk portfolio",
     category: "Web",
-    technology: "HTML & CSS",
     description:
       "Een toegankelijke, responsive website waarmee ik mijn kennis over HTML, CSS en JavaScript toepas en verbeter.",
-    year: 2026,
+    date: "2026-01-01T00:00:00Z",
+    gitHubUrl: null,
   },
   {
-    name: "A Knight's Journey",
+    title: "A Knight's Journey",
     category: "Game development",
-    technology: "C# & design",
     description:
       "Een hobbyproject in Godot waarin ik een 2D metroidvania meets platformer game ontwerp en ontwikkel.",
-    year: 2025,
+    date: "2025-01-01T00:00:00Z",
+    gitHubUrl: null,
   },
   {
-    name: "Hotel Simulator",
+    title: "Hotel Simulator",
     category: "Software",
-    technology: "Java & back-end",
     description:
       "Een Java-simulatie waarin gasten kunnen inchecken, uitchecken en kamers kunnen reserveren.",
-    year: 2026,
-    link: "./hotel_simulator.html",
+    date: "2026-01-01T00:00:00Z",
+    gitHubUrl: "https://github.com/Mausin123457/Hotel-Simulator",
   },
 ];
-
-const blogPosts = [
+const fallbackBlogPosts = [
   {
-    date: "03 september 2026",
-    category: "HTML",
     title: "Waarom semantische HTML belangrijk is",
-    description:
-      "Een eerste kennismaking met betekenisvolle elementen, structuur en toegankelijkheid.",
-    paragraphs: [
-      "Toen ik begon met HTML dacht ik vooral aan de visuele kant van een website. Inmiddels begrijp ik dat HTML ook betekenis geeft aan de inhoud. Een kop hoort bijvoorbeeld in een h1- of h2-element en navigatie hoort in een nav-element.",
-      "Semantische HTML helpt bezoekers die met een schermlezer navigeren, maar maakt een pagina ook overzichtelijker voor ontwikkelaars. De structuur van de code vertelt meteen welke onderdelen belangrijk zijn.",
-      "Daarom gebruik ik op deze portfoliosecties onder andere main, section, article, header en footer. CSS bepaalt de vormgeving, terwijl HTML de betekenis en volgorde van de informatie bewaakt.",
-    ],
-    link: "../pages/Blog_semantiek.html",
+    content:
+      "Toen ik begon met HTML dacht ik vooral aan de visuele kant van een website. Inmiddels begrijp ik dat HTML ook betekenis geeft aan de inhoud. Een kop hoort bijvoorbeeld in een h1- of h2-element en navigatie hoort in een nav-element.\n\nSemantische HTML helpt bezoekers die met een schermlezer navigeren, maar maakt een pagina ook overzichtelijker voor ontwikkelaars. De structuur van de code vertelt meteen welke onderdelen belangrijk zijn.\n\nDaarom gebruik ik op deze portfoliosecties onder andere main, section, article, header en footer. CSS bepaalt de vormgeving, terwijl HTML de betekenis en volgorde van de informatie bewaakt.",
+    publicationDate: "2026-09-03T00:00:00Z",
   },
   {
-    date: "22-9-2026",
-    category: "Git",
     title: "Mijn eerste stappen met versiebeheer",
-    description:
-      "Wat commits, branches en een duidelijke geschiedenis mij leren over samenwerken.",
-    paragraphs: [
-      "Met Git kan ik wijzigingen in mijn projecten bijhouden. Een commit is daarbij een logisch moment waarop ik een werkende wijziging vastleg met een korte beschrijving.",
-      "In het begin maakte ik commits te groot en was het lastig om later terug te vinden wat er veranderd was. Door kleinere commits te maken, blijft de geschiedenis begrijpelijk en kan ik eenvoudiger een fout onderzoeken.",
-      "Branches geven mij ruimte om iets nieuws te proberen zonder de stabiele versie direct te veranderen. Dat maakt versiebeheer niet alleen handig voor samenwerken, maar ook voor mijn eigen leerproces.",
-    ],
+    content:
+      "Met Git kan ik mijn wijzigingen in mijn projecten bijhouden. Een commit is daarbij een logisch moment waarop ik een werkende wijziging vastleg met een korte beschrijving.\n\nIn het begin maakte ik commits te groot en was het lastig om later terug te vinden wat er veranderd was. Door kleinere commits te maken, blijft de geschiedenis begrijpelijk en kan ik eenvoudiger een fout onderzoeken.\n\nBranches geven mij ruimte om iets nieuws te proberen zonder de stabiele versie direct te veranderen. Dat maakt versiebeheer niet alleen handig voor samenwerken, maar ook voor mijn eigen leerproces.",
+    publicationDate: "2026-09-22T00:00:00Z",
   },
 ];
+let projects = [];
+let blogPosts = [];
+
+const apiRequest = async (path) => {
+  const response = await fetch(`${API_BASE_URL}${path}`);
+  if (!response.ok) throw new Error(`API request failed (${response.status})`);
+  return response.json();
+};
+
+const formatDate = (value) =>
+  new Intl.DateTimeFormat("nl-NL", { dateStyle: "long" })
+    .format(new Date(value));
+
+const loadPortfolioData = async () => {
+  if (!useApi) {
+    projects = fallbackProjects;
+    blogPosts = fallbackBlogPosts;
+    return;
+  }
+
+  try {
+    [projects, blogPosts] = await Promise.all([
+      apiRequest("/api/projects"),
+      apiRequest("/api/blogposts"),
+    ]);
+  } catch (error) {
+    projects = fallbackProjects;
+    blogPosts = fallbackBlogPosts;
+    console.warn(
+      "Portfolio API unavailable; using static fallback data.",
+      error,
+    );
+  }
+};
 
 const createElement = (tag, text, className) => {
   const element = document.createElement(tag);
@@ -74,28 +99,31 @@ const renderProjects = () => {
   const visibleProjects = projects
     .filter((project) => category === "all" || project.category === category)
     .filter((project) =>
-      `${project.name} ${project.technology}`.toLowerCase().includes(search),
+      `${project.title} ${project.category} ${project.description}`
+        .toLowerCase()
+        .includes(search),
     )
     .sort((first, second) =>
       sort === "name"
-        ? first.name.localeCompare(second.name)
-        : second.year - first.year,
+        ? first.title.localeCompare(second.title)
+        : new Date(second.date) - new Date(first.date),
     );
 
   list.replaceChildren(
     ...visibleProjects.map((project) => {
       const card = createElement("article", null, "project-card");
       card.append(
-        createElement("p", project.technology, "card-label"),
-        createElement("h3", project.name),
+        createElement("p", project.category, "card-label"),
+        createElement("h3", project.title),
         createElement("p", project.description),
       );
-      if (project.link) {
-        const link = createElement("a", "Lees meer →", "text-link");
-        link.href = project.link;
+      card.append(createElement("p", formatDate(project.date), "muted"));
+      if (project.gitHubUrl) {
+        const link = createElement("a", "Bekijk op GitHub ↗", "text-link");
+        link.href = project.gitHubUrl;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
         card.append(link);
-      } else {
-        card.append(createElement("span", "Binnenkort meer", "muted"));
       }
       return card;
     }),
@@ -138,21 +166,13 @@ const renderBlogs = () => {
       title.setAttribute("role", "heading");
       title.setAttribute("aria-level", "3");
       summary.append(
-        createElement("span", `${post.date} · ${post.category}`, "card-label"),
+        createElement("span", formatDate(post.publicationDate), "card-label"),
         title,
       );
-      content.append(createElement("p", post.description));
-      post.paragraphs.forEach((paragraph) =>
+      post.content.split(/\r?\n\r?\n/).forEach((paragraph) =>
         content.append(createElement("p", paragraph)),
       );
       details.append(summary, content);
-      if (post.link) {
-        const link = createElement("a", "Lees meer →", "text-link");
-        link.href = post.link;
-        details.append(link);
-      } else {
-        details.append(createElement("span", "Binnenkort meer", "muted"));
-      }
       article.append(details);
       return article;
     }),
@@ -306,7 +326,16 @@ const setupFooterContact = () => {
   });
 };
 
-setupProjects();
-renderBlogs();
+const initializePortfolio = async () => {
+  try {
+    await loadPortfolioData();
+    setupProjects();
+    renderBlogs();
+  } catch (error) {
+    console.error("Portfolio API unavailable", error);
+  }
+};
+
+initializePortfolio();
 setupMusic();
 setupFooterContact();
