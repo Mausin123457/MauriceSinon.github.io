@@ -69,11 +69,11 @@ CORS staat niet meer open voor alle origins. Development staat alleen de
 gebruikelijke lokale frontendpoorten toe. De basisconfiguratie staat de
 GitHub Pages-origin `https://mausin123457.github.io` toe. Voeg een nieuwe
 frontend-origin alleen toe via `Cors:AllowedOrigins` in de configuratie van de
-betreffende omgeving.
+betreffende omgeving. Ook al gebruikt Github Pages geen back end, is dit toch
+toegevoegd om te laten zien hoe dit in een echte productie omgeving zou werken.
 
 De API gebruikt `ConnectionStrings__Portfolio` en
-`Admin__PasswordHash` voor productiegeheimen. Zet deze niet in
-`appsettings.json` of in frontend-JavaScript.
+`Admin__PasswordHash` voor productiegeheimen.
 
 ## Frontend en API
 
@@ -104,24 +104,18 @@ zelf met de gewenste environment worden geconfigureerd.
 
 ## Architectuur
 
-De backend gebruikt Minimal API met drie herkenbare verantwoordelijkheden:
-
-```text
-Swagger/client
-    -> ProjectEndpoints of BlogPostEndpoints (routes en HTTP-resultaten)
-    -> ProjectService of BlogPostService (use case en DTO-mapping)
-    -> PortfolioDbContext (EF Core-datatoegang)
-    -> SQL Server (persistente data)
-```
-
-De routes staan in `api/Endpoints`, de applicatielogica in
-`api/Services`, de EF Core-context in `api/Data`, de entiteiten in `api/Models`
-en de invoer- en uitvoer-DTO's in `api/Dtos`. Minimal API-routes ontvangen de
-services via dependency injection en gebruiken de DbContext niet rechtstreeks.
-
-Een `ProjectDto` en `BlogPostDto` zijn uitvoer-DTO's. De input-DTO's ontvangen
-nooit een `Id`; de services maken de entiteiten aan en zetten ze expliciet om
-naar DTO's. Daardoor blijven database-entiteiten intern.
+De backend is een gelaagde monolith met twee herkenbare verticale slices:
+één voor projecten en één voor blogposts. Beide slices lopen van de frontend of
+Swagger via respectievelijk `ProjectEndpoints` of `BlogPostEndpoints` naar de
+bijbehorende service, input- en output-DTO's, entiteit en uiteindelijk de
+`PortfolioDbContext` en SQL Server. De endpoints zijn verantwoordelijk voor
+routes, model binding, autorisatie en HTTP-resultaten, terwijl de services de
+use cases, databasequery's en DTO-mapping uitvoeren. De database-entiteiten
+staan in `api/Models`, de context in `api/Data`, de services in `api/Services`
+en de DTO's in `api/Dtos`. De routes ontvangen hun services via dependency
+injection en gebruiken de DbContext niet rechtstreeks. Authenticatie, CSRF,
+CORS, configuratie en de DbContext zijn gedeelde infrastructuur voor beide
+slices; de project- en blogpostlogica zelf blijft per resource gescheiden.
 
 ## API-routes
 
@@ -155,20 +149,6 @@ Een monolith past bij deze portfolio omdat de frontend en twee eenvoudige
 datastromen één samenhangende applicatie vormen. Bij het scenario waarin een
 bezoeker een nieuw project toevoegt, bindt Minimal API het verzoek aan een
 input-DTO, voert de service de use case uit en slaat EF Core het project op in
-SQL Server. Twee
-microservices zouden voor deze beperkte schaal extra deployment- en
+SQL Server. Twee microservices zouden voor deze beperkte schaal extra deployment- en
 communicatiecomplexiteit toevoegen. Deze keuze sluit aan bij de Microsoft Learn
-bron [Create a Minimal API with ASP.NET
-Core](https://learn.microsoft.com/aspnet/core/tutorials/min-web-api).
-
-## Bewijs en procesverantwoording
-
-Voor de inlevering moeten nog persoonlijke gegevens, Swagger-screenshots en
-feedbackgegevens worden toegevoegd. Maak screenshots in deze volgorde voor
-één project en één blogpost: POST, GET alle, GET op id, PUT, GET na een
-herstart en DELETE gevolgd door GET op hetzelfde id (404). Noteer in de
-procesverantwoording de gebruikte bronnen, eventuele AI-hulp en eigen
-controle, ontvangen feedback, de verwerking daarvan en de zelfstudie-uren per
-leeruitkomst. De rubric schrijft ook minimaal zes commits over minimaal drie
-weken voor; dat is repositoryhistorie en kan niet door de code zelf worden
-afgedwongen.
+bron [Create a Minimal API with ASP.NETCore](https://learn.microsoft.com/aspnet/core/tutorials/min-web-api).
