@@ -2,7 +2,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MauriceSinon.Api.Dtos;
 
-public sealed record BlogPostDto(int Id, string Title, string Content, DateTime PublicationDate);
+public sealed record BlogPostDto(
+    int Id, 
+    string Title, 
+    string Content, 
+    DateTime PublicationDate);
 
 public sealed record BlogPostInputDto
 {

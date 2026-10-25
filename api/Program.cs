@@ -81,5 +81,3 @@ app.MapProjectEndpoints();
 app.MapBlogPostEndpoints();
 
 app.Run();
-
-public partial class Program;
