@@ -1,20 +1,61 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Portfolio admin</title>
     <style>
-      body { max-width: 960px; margin: 2rem auto; padding: 0 1rem; font: 1rem system-ui, sans-serif; color: #24313a; }
-      form, section { border: 1px solid #d9d7ce; border-radius: .5rem; padding: 1rem; margin: 1rem 0; }
-      label { display: block; margin-top: .75rem; font-weight: 600; }
-      input, textarea, button { width: 100%; padding: .6rem; margin-top: .25rem; font: inherit; }
-      button { cursor: pointer; }
-      .hidden { display: none; }
-      .row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-      li { margin: .75rem 0; }
-      .error { color: #8b1e1e; }
-      @media (max-width: 640px) { .row { grid-template-columns: 1fr; } }
+      body {
+        max-width: 960px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        font:
+          1rem system-ui,
+          sans-serif;
+        color: #24313a;
+      }
+      form,
+      section {
+        border: 1px solid #d9d7ce;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin: 1rem 0;
+      }
+      label {
+        display: block;
+        margin-top: 0.75rem;
+        font-weight: 600;
+      }
+      input,
+      textarea,
+      button {
+        width: 100%;
+        padding: 0.6rem;
+        margin-top: 0.25rem;
+        font: inherit;
+      }
+      button {
+        cursor: pointer;
+      }
+      .hidden {
+        display: none;
+      }
+      .row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+      li {
+        margin: 0.75rem 0;
+      }
+      .error {
+        color: #8b1e1e;
+      }
+      @media (max-width: 640px) {
+        .row {
+          grid-template-columns: 1fr;
+        }
+      }
     </style>
   </head>
   <body>
@@ -22,8 +63,17 @@
     <p id="status" role="status"></p>
     <form id="login-form">
       <h2>Log in</h2>
-      <label>Username <input name="username" required autocomplete="username"></label>
-      <label>Password <input name="password" type="password" required autocomplete="current-password"></label>
+      <label
+        >Username <input name="username" required autocomplete="username"
+      /></label>
+      <label
+        >Password
+        <input
+          name="password"
+          type="password"
+          required
+          autocomplete="current-password"
+      /></label>
       <button type="submit">Log in</button>
     </form>
     <main id="admin-panel" class="hidden">
@@ -31,14 +81,23 @@
       <section>
         <h2>Projects</h2>
         <form id="project-form">
-          <input name="id" type="hidden">
+          <input name="id" type="hidden" />
           <div class="row">
-            <label>Title <input name="title" maxlength="200" required></label>
-            <label>Category <input name="category" maxlength="100" required></label>
+            <label>Title <input name="title" maxlength="200" required /></label>
+            <label
+              >Category <input name="category" maxlength="100" required
+            /></label>
           </div>
-          <label>Description <textarea name="description" maxlength="2000" required></textarea></label>
-          <label>GitHub URL <input name="githubUrl" type="url" maxlength="500"></label>
-          <label>Date <input name="date" type="datetime-local" required></label>
+          <label
+            >Description
+            <textarea name="description" maxlength="2000" required></textarea>
+          </label>
+          <label
+            >GitHub URL <input name="githubUrl" type="url" maxlength="500"
+          /></label>
+          <label
+            >Date <input name="date" type="datetime-local" required
+          /></label>
           <button type="submit">Save project</button>
           <button id="cancel-project" type="button">Clear</button>
         </form>
@@ -47,10 +106,16 @@
       <section>
         <h2>Blog posts</h2>
         <form id="blog-form">
-          <input name="id" type="hidden">
-          <label>Title <input name="title" maxlength="200" required></label>
-          <label>Content <textarea name="content" maxlength="10000" required></textarea></label>
-          <label>Publication date <input name="publicationDate" type="datetime-local" required></label>
+          <input name="id" type="hidden" />
+          <label>Title <input name="title" maxlength="200" required /></label>
+          <label
+            >Content
+            <textarea name="content" maxlength="10000" required></textarea>
+          </label>
+          <label
+            >Publication date
+            <input name="publicationDate" type="datetime-local" required
+          /></label>
           <button type="submit">Save blog post</button>
           <button id="cancel-blog" type="button">Clear</button>
         </form>
