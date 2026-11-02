@@ -1,16 +1,20 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using MauriceSinon.Api.Identity;
 using MauriceSinon.Api.Models;
 
 namespace MauriceSinon.Api.Data;
 
 public class PortfolioDbContext(DbContextOptions<PortfolioDbContext> options)
-    : DbContext(options)
+    : IdentityDbContext<ApplicationUser>(options)
 {
     public DbSet<Project> Projects => Set<Project>();
     public DbSet<BlogPost> BlogPosts => Set<BlogPost>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
         modelBuilder.Entity<Project>(entity =>
         {
             entity.Property(project => project.Title).HasMaxLength(200).IsRequired();
