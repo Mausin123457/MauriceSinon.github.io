@@ -71,7 +71,10 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var database = scope.ServiceProvider.GetRequiredService<PortfolioDbContext>();
-    database.Database.EnsureCreated();
+    if (app.Environment.IsEnvironment("Testing"))
+        database.Database.EnsureCreated();
+    else
+        database.Database.Migrate();
 }
 
 if (app.Environment.IsDevelopment())

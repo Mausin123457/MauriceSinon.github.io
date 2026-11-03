@@ -17,16 +17,18 @@ repository gebruikt de lokaal geïnstalleerde SQL Server Express-instantie
 `.\SQLEXPRESS`. Voor andere omgevingen moet
 `ConnectionStrings__Portfolio` via environment variables of secret storage
 worden ingesteld; productieconfiguratie staat niet in Git.
-De API gebruikt
-`Database.EnsureCreated()` bij het starten. Daardoor worden de tabellen
-automatisch aangemaakt als de database nog niet bestaat; er is voor deze
-opdracht geen migratie nodig.
+De API past bij het starten de aanwezige EF Core-migrations toe. Maak de
+database vooraf of tijdens de eerste start aan met:
 
 ```powershell
 cd api
 dotnet restore
+dotnet ef database update
 dotnet run
 ```
+
+De migration bevat zowel de portfolio-tabellen als de ASP.NET Core
+Identity-tabellen. De tests gebruiken een aparte InMemory-database.
 
 Open daarna `http://localhost:5000/swagger` (de exacte poort staat in de
 terminal). Swagger UI toont alle CRUD-endpoints.
