@@ -75,6 +75,12 @@ using (var scope = app.Services.CreateScope())
         database.Database.EnsureCreated();
     else
         database.Database.Migrate();
+
+    await IdentitySeeder.SeedAsync(
+        scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>(),
+        scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>(),
+        app.Configuration,
+        app.Environment);
 }
 
 if (app.Environment.IsDevelopment())
