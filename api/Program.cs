@@ -15,7 +15,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddValidation();
 builder.Services.AddIdentityCore<ApplicationUser>(options =>
     {
-        options.User.RequireUniqueEmail = true;
+        options.User.RequireUniqueEmail = false;
     })
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<PortfolioDbContext>()
@@ -94,6 +94,7 @@ app.UseCors("PortfolioFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<CsrfMiddleware>();
+app.MapAuthEndpoints();
 app.MapAdminEndpoints();
 app.MapProjectEndpoints();
 app.MapBlogPostEndpoints();
