@@ -1,8 +1,11 @@
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 using MauriceSinon.Api.Data;
 using MauriceSinon.Api.Endpoints;
+using MauriceSinon.Api.Identity;
 using MauriceSinon.Api.Security;
 using MauriceSinon.Api.Services;
 
@@ -11,6 +14,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddValidation();
+builder.Services.AddIdentityCore<ApplicationUser>(options =>
+    {
+        options.User.RequireUniqueEmail = false;
+    })
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<PortfolioDbContext>()
+    .AddSignInManager();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -29,8 +39,32 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
             context.Response.StatusCode = StatusCodes.Status403Forbidden;
             return Task.CompletedTask;
         };
-    });
-builder.Services.AddAuthorization();
+    })
+    .AddCookie(IdentityConstants.ApplicationScheme, options =>
+{
+    options.Cookie.Name = "maurice-identity";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SameSite = SameSiteMode.Strict;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+    options.Events.OnRedirectToLogin = context =>
+    {
+        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+        return Task.CompletedTask;
+    };
+    options.Events.OnRedirectToAccessDenied = context =>
+    {
+        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+        return Task.CompletedTask;
+    };
+});
+builder.Services.AddAuthorization(options =>
+{
+    options.DefaultPolicy = new AuthorizationPolicyBuilder(
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            IdentityConstants.ApplicationScheme)
+        .RequireAuthenticatedUser()
+        .Build();
+});
 builder.Services.AddSingleton<AdminAuthenticationService>();
 builder.Services.AddDbContext<PortfolioDbContext>(options =>
 {
@@ -62,7 +96,16 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var database = scope.ServiceProvider.GetRequiredService<PortfolioDbContext>();
-    database.Database.EnsureCreated();
+    if (app.Environment.IsEnvironment("Testing"))
+        database.Database.EnsureCreated();
+    else
+        database.Database.Migrate();
+
+    await IdentitySeeder.SeedAsync(
+        scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>(),
+        scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>(),
+        app.Configuration,
+        app.Environment);
 }
 
 if (app.Environment.IsDevelopment())
@@ -76,6 +119,7 @@ app.UseCors("PortfolioFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<CsrfMiddleware>();
+app.MapAuthEndpoints();
 app.MapAdminEndpoints();
 app.MapProjectEndpoints();
 app.MapBlogPostEndpoints();
