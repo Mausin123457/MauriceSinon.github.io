@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
 using MauriceSinon.Api.Identity;
+using MauriceSinon.Api.Security;
 
 namespace MauriceSinon.Api.Endpoints;
 
@@ -42,6 +43,43 @@ public static class AuthEndpoints
         .AllowAnonymous()
         .WithName("Register");
 
+        group.MapPost("/login", async (
+            LoginRequest request,
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
+            HttpContext httpContext) =>
+        {
+            var user = await userManager.FindByNameAsync(request.Username);
+            if (user is null)
+                return Results.Unauthorized();
+
+            var signInResult = await signInManager.CheckPasswordSignInAsync(
+                user,
+                request.Password,
+                lockoutOnFailure: false);
+            if (!signInResult.Succeeded)
+                return Results.Unauthorized();
+
+            await signInManager.SignInAsync(user, isPersistent: false);
+            CsrfMiddleware.SetTokenCookie(
+                httpContext.Response,
+                CsrfMiddleware.CreateToken());
+            return Results.Ok(new { username = user.UserName });
+        })
+        .AllowAnonymous()
+        .WithName("Login");
+
+        group.MapPost("/logout", async (
+            SignInManager<ApplicationUser> signInManager,
+            HttpContext httpContext) =>
+        {
+            await signInManager.SignOutAsync();
+            httpContext.Response.Cookies.Delete(CsrfMiddleware.CookieName);
+            return Results.NoContent();
+        })
+        .RequireAuthorization()
+        .WithName("Logout");
+
         return endpoints;
     }
 
@@ -51,6 +89,15 @@ public static class AuthEndpoints
         public required string Username { get; init; }
 
         [Required, StringLength(200, MinimumLength = 12)]
+        public required string Password { get; init; }
+    }
+
+    public sealed record LoginRequest
+    {
+        [Required, StringLength(100)]
+        public required string Username { get; init; }
+
+        [Required, StringLength(200)]
         public required string Password { get; init; }
     }
 }
