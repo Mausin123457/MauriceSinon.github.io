@@ -64,6 +64,12 @@ builder.Services.AddAuthorization(options =>
             IdentityConstants.ApplicationScheme)
         .RequireAuthenticatedUser()
         .Build();
+    options.AddPolicy(IdentityRoles.EditorOrAdminPolicy, policy =>
+        policy.AddAuthenticationSchemes(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                IdentityConstants.ApplicationScheme)
+            .RequireAuthenticatedUser()
+            .RequireRole(IdentityRoles.Editor, IdentityRoles.Admin));
 });
 builder.Services.AddSingleton<AdminAuthenticationService>();
 builder.Services.AddDbContext<PortfolioDbContext>(options =>

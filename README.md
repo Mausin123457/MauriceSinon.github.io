@@ -33,25 +33,39 @@ Identity-tabellen. De tests gebruiken een aparte InMemory-database.
 Open daarna `http://localhost:5000/swagger` (de exacte poort staat in de
 terminal). Swagger UI toont alle CRUD-endpoints.
 
-## Adminbeheer en authenticatie
+## Gebruikers, rollen en authenticatie
 
 Publieke `GET`-requests blijven beschikbaar. `POST`, `PUT` en `DELETE` voor
-projecten en blogposts vereisen een admin-cookie en een CSRF-token. De
-beheerpagina staat op `http://localhost:5106/admin.html` wanneer de
-developmentserver op de standaardpoort draait.
+projecten en blogposts vereisen een authenticatiecookie van een gebruiker met
+de rol `Editor` of `Admin`, plus een CSRF-token. Een aangemelde gebruiker met
+alleen de rol `Gast` krijgt `403 Forbidden`; een anonieme gebruiker krijgt
+`401 Unauthorized`. De API controleert deze rollen zelf met de policy
+`EditorOrAdmin`.
 
-Configureer het adminaccount buiten Git met environment variables:
+Configureer lokale Identity-gebruikers buiten Git met environment variables:
 
 ```powershell
-$env:Admin__Username = "admin"
-$env:Admin__PasswordHash = "<ASP.NET PasswordHasher hash>"
+$env:Identity__Admin__Username = "admin"
+$env:Identity__Admin__Password = "<sterk lokaal wachtwoord>"
+$env:Identity__Editor__Username = "editor"
+$env:Identity__Editor__Password = "<sterk lokaal wachtwoord>"
 dotnet run
 ```
 
-De hash moet met `Microsoft.AspNetCore.Identity.PasswordHasher` worden gemaakt;
-zet nooit een plaintext-wachtwoord of een echte hash in
-`appsettings.json`. De standaardconfiguratie bevat bewust geen bruikbare
-hash, waardoor login pas werkt nadat deze variabele is ingesteld.
+In de `Development`-omgeving maakt de seeder deze gebruikers aan en kent hij
+respectievelijk de rollen `Admin` en `Editor` toe. Iedere gebruiker die via
+`POST /api/auth/register` wordt geregistreerd, krijgt uitsluitend de rol
+`Gast`. Een publieke registratie kan dus nooit zelf `Editor` of `Admin`
+worden. De drie rollen worden bij het opstarten aangemaakt als ze nog niet
+bestaan. Na een rolwijziging moet de gebruiker opnieuw inloggen.
+
+Zet nooit een plaintext-wachtwoord, wachtwoordhash of andere sleutel in
+`appsettings.json` of in de repository. Voor de aparte lokale adminpagina
+kan ook `Admin__Username` en `Admin__PasswordHash` worden gebruikt; die
+authenticatie levert een `Admin`-rolclaim en blijft compatibel met dezelfde
+schrijfpolicy. De beheerpagina staat op
+`http://localhost:5106/admin.html` wanneer de developmentserver op de
+standaardpoort draait.
 
 De beheerpagina gebruikt dezelfde API-origin en HttpOnly/SameSite cookie-auth,
 plus een apart CSRF-token voor wijzigende requests. In development gebruikt de
@@ -74,8 +88,8 @@ frontend-origin alleen toe via `Cors:AllowedOrigins` in de configuratie van de
 betreffende omgeving. Ook al gebruikt Github Pages geen back end, is dit toch
 toegevoegd om te laten zien hoe dit in een echte productie omgeving zou werken.
 
-De API gebruikt `ConnectionStrings__Portfolio` en
-`Admin__PasswordHash` voor productiegeheimen.
+De API gebruikt `ConnectionStrings__Portfolio` en de Identity- of
+adminconfiguratie voor productiegeheimen.
 
 ## Frontend en API
 
@@ -131,6 +145,22 @@ Voor beide resources zijn de vijf CRUD-routes beschikbaar:
 Een onbekend id geeft bij GET, PUT en DELETE HTTP 404. Een succesvolle POST
 geeft HTTP 201 met een link naar het nieuwe item.
 
+| Routegroep | Toegang | Succes | Belangrijke afwijzingen |
+| --- | --- | --- | --- |
+| `GET /api/projects`, `GET /api/projects/{id}` | Iedereen | `200` | onbekend id: `404` |
+| `GET /api/blogposts`, `GET /api/blogposts/{id}` | Iedereen | `200` | onbekend id: `404` |
+| `POST`, `PUT`, `DELETE /api/projects...` | Editor of Admin + CSRF | `201` of `204` | anoniem: `401`, Gast: `403` |
+| `POST`, `PUT`, `DELETE /api/blogposts...` | Editor of Admin + CSRF | `201` of `204` | anoniem: `401`, Gast: `403` |
+| `POST /api/auth/register` | Iedereen | `201` en rol Gast | dubbele naam: `409`, ongeldige invoer: `400` |
+| `POST /api/auth/login` | Iedereen | `200` en Identity-cookie | ongeldig wachtwoord: `401` |
+
+De HTTP-dekking staat in het xUnit-project
+`tests/MauriceSinon.Api.Tests.csproj`. `AdminApiTests` controleert de tien
+CRUD-routecombinaties, publieke GETs, validatie, onbekende ids, `401`/`403`,
+CSRF en schrijven als Editor en Admin. `AuthApiTests` controleert registratie,
+de Guest-rol, login, cookies, logout en de afwijzing van elevated rollen bij
+publieke registratie.
+
 ## Onderbouwing architectuur
 
 Minimal API past bij deze kleine portfolio-API omdat de routes compact en
@@ -143,9 +173,9 @@ nieuw endpoint voorspelbaar blijft.
 Bij een nieuw veld in `Project` of `BlogPost` voeg ik het veld toe aan de
 entiteit, configureer ik eventueel de lengte in `PortfolioDbContext`, en voeg
 ik het toe aan de relevante input- en output-DTO. Daarna pas ik de mapping in
-de service aan. EF Core vertaalt de LINQ-query naar SQL en
-`EnsureCreated()` maakt de database opnieuw aan wanneer de database nog niet
-bestaat. In een productieomgeving zou ik hiervoor migraties gebruiken.
+de service aan. EF Core vertaalt de LINQ-query naar SQL en de aanwezige EF
+Core-migraties maken of wijzigen de database. In de tests wordt hiervoor
+bewust een aparte InMemory-database gebruikt.
 
 Een monolith past bij deze portfolio omdat de frontend en twee eenvoudige
 datastromen één samenhangende applicatie vormen. Bij het scenario waarin een
