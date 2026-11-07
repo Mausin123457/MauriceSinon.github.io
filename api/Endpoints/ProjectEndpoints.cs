@@ -1,4 +1,5 @@
 using MauriceSinon.Api.Dtos;
+using MauriceSinon.Api.Identity;
 using MauriceSinon.Api.Services;
 
 namespace MauriceSinon.Api.Endpoints;
@@ -34,7 +35,7 @@ public static class ProjectEndpoints
         {
             var project = await projects.CreateAsync(input, cancellationToken);
             return Results.Created($"/api/projects/{project.Id}", project);
-        }).RequireAuthorization();
+        }).RequireAuthorization(IdentityRoles.EditorOrAdminPolicy);
 
         group.MapPut("/{id:int}", async (
             int id,
@@ -43,7 +44,8 @@ public static class ProjectEndpoints
             CancellationToken cancellationToken) =>
             await projects.UpdateAsync(id, input, cancellationToken)
                 ? Results.NoContent()
-                : Results.NotFound()).RequireAuthorization();
+                : Results.NotFound()).RequireAuthorization(
+                    IdentityRoles.EditorOrAdminPolicy);
 
         group.MapDelete("/{id:int}", async (
             int id,
@@ -51,7 +53,8 @@ public static class ProjectEndpoints
             CancellationToken cancellationToken) =>
             await projects.DeleteAsync(id, cancellationToken)
                 ? Results.NoContent()
-                : Results.NotFound()).RequireAuthorization();
+                : Results.NotFound()).RequireAuthorization(
+                    IdentityRoles.EditorOrAdminPolicy);
 
         return endpoints;
     }

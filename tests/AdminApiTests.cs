@@ -1,5 +1,8 @@
 using System.Net;
 using System.Net.Http.Json;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
+using MauriceSinon.Api.Identity;
 using Xunit;
 
 namespace MauriceSinon.Api.Tests;
@@ -42,6 +45,63 @@ public sealed class AdminApiTests(ApiFactory factory) : IClassFixture<ApiFactory
         Assert.Equal(HttpStatusCode.OK, readResponse.StatusCode);
         var saved = await readResponse.Content.ReadFromJsonAsync<ProjectResponse>();
         Assert.Equal("Test project", saved!.Title);
+    }
+
+    [Fact]
+    public async Task Public_project_get_routes_return_expected_results()
+    {
+        using var client = factory.CreateClient();
+
+        var all = await client.GetAsync("/api/projects/");
+        var missing = await client.GetAsync("/api/projects/999999");
+
+        Assert.Equal(HttpStatusCode.OK, all.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, missing.StatusCode);
+    }
+
+    [Fact]
+    public async Task Public_blog_post_get_routes_return_expected_results()
+    {
+        using var client = CreateAuthenticatedClient();
+        var create = await client.PostAsJsonAsync("/api/blogposts", ValidBlogPost());
+        var post = await create.Content.ReadFromJsonAsync<BlogPostResponse>();
+
+        using var publicClient = factory.CreateClient();
+        var all = await publicClient.GetAsync("/api/blogposts/");
+        var single = await publicClient.GetAsync($"/api/blogposts/{post!.Id}");
+
+        Assert.Equal(HttpStatusCode.OK, all.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, single.StatusCode);
+    }
+
+    [Fact]
+    public async Task Guest_cannot_write_projects()
+    {
+        using var client = await CreateIdentityClient(IdentityRoles.Guest);
+
+        var response = await client.PostAsJsonAsync("/api/projects", ValidProject());
+
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Editor_can_create_a_project()
+    {
+        using var client = await CreateIdentityClient(IdentityRoles.Editor);
+
+        var response = await client.PostAsJsonAsync("/api/projects", ValidProject());
+
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Identity_admin_can_create_a_blog_post()
+    {
+        using var client = await CreateIdentityClient(IdentityRoles.Admin);
+
+        var response = await client.PostAsJsonAsync("/api/blogposts", ValidBlogPost());
+
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
     }
 
     [Fact]
@@ -104,10 +164,14 @@ public sealed class AdminApiTests(ApiFactory factory) : IClassFixture<ApiFactory
             category = "Updated",
             date = "2026-10-20T11:00:00Z"
         });
+        var updated = await client.GetAsync($"/api/projects/{project.Id}");
         var delete = await client.DeleteAsync($"/api/projects/{project.Id}");
         var missing = await client.GetAsync($"/api/projects/{project.Id}");
 
         Assert.Equal(HttpStatusCode.NoContent, update.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, updated.StatusCode);
+        var saved = await updated.Content.ReadFromJsonAsync<ProjectResponse>();
+        Assert.Equal("Updated project", saved!.Title);
         Assert.Equal(HttpStatusCode.NoContent, delete.StatusCode);
         Assert.Equal(HttpStatusCode.NotFound, missing.StatusCode);
     }
@@ -125,10 +189,14 @@ public sealed class AdminApiTests(ApiFactory factory) : IClassFixture<ApiFactory
             content = "Updated content",
             publicationDate = "2026-10-20T11:00:00Z"
         });
+        var updated = await client.GetAsync($"/api/blogposts/{post.Id}");
         var delete = await client.DeleteAsync($"/api/blogposts/{post.Id}");
         var missing = await client.GetAsync($"/api/blogposts/{post.Id}");
 
         Assert.Equal(HttpStatusCode.NoContent, update.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, updated.StatusCode);
+        var saved = await updated.Content.ReadFromJsonAsync<BlogPostResponse>();
+        Assert.Equal("Updated post", saved!.Title);
         Assert.Equal(HttpStatusCode.NoContent, delete.StatusCode);
         Assert.Equal(HttpStatusCode.NotFound, missing.StatusCode);
     }
@@ -172,6 +240,43 @@ public sealed class AdminApiTests(ApiFactory factory) : IClassFixture<ApiFactory
         var csrfCookie = cookies.Single(cookie => cookie.StartsWith("maurice-csrf=", StringComparison.Ordinal));
         var csrf = csrfCookie.Split(';', 2)[0].Split('=', 2)[1];
         client.DefaultRequestHeaders.Add("Cookie", $"{authCookie.Split(';', 2)[0]}; {csrfCookie.Split(';', 2)[0]}");
+        client.DefaultRequestHeaders.Add("X-CSRF-TOKEN", csrf);
+        return client;
+    }
+
+    private async Task<HttpClient> CreateIdentityClient(string role)
+    {
+        var username = $"{role.ToLowerInvariant()}-{Guid.NewGuid():N}";
+        using (var scope = factory.Services.CreateScope())
+        {
+            var userManager = scope.ServiceProvider
+                .GetRequiredService<UserManager<ApplicationUser>>();
+            var user = new ApplicationUser { UserName = username };
+            var createResult = await userManager.CreateAsync(
+                user,
+                "ValidPassword123!");
+            Assert.True(createResult.Succeeded);
+            var roleResult = await userManager.AddToRoleAsync(user, role);
+            Assert.True(roleResult.Succeeded);
+        }
+
+        var client = factory.CreateClient();
+        var login = await client.PostAsJsonAsync("/api/auth/login", new
+        {
+            username,
+            password = "ValidPassword123!"
+        });
+        login.EnsureSuccessStatusCode();
+
+        var cookies = login.Headers.GetValues("Set-Cookie").ToArray();
+        var authCookie = cookies.Single(cookie =>
+            cookie.StartsWith("maurice-identity=", StringComparison.Ordinal));
+        var csrfCookie = cookies.Single(cookie =>
+            cookie.StartsWith("maurice-csrf=", StringComparison.Ordinal));
+        var csrf = csrfCookie.Split(';', 2)[0].Split('=', 2)[1];
+        client.DefaultRequestHeaders.Add(
+            "Cookie",
+            $"{authCookie.Split(';', 2)[0]}; {csrfCookie.Split(';', 2)[0]}");
         client.DefaultRequestHeaders.Add("X-CSRF-TOKEN", csrf);
         return client;
     }
