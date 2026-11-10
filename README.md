@@ -157,9 +157,42 @@ geeft HTTP 201 met een link naar het nieuwe item.
 De HTTP-dekking staat in het xUnit-project
 `tests/MauriceSinon.Api.Tests.csproj`. `AdminApiTests` controleert de tien
 CRUD-routecombinaties, publieke GETs, validatie, onbekende ids, `401`/`403`,
-CSRF en schrijven als Editor en Admin. `AuthApiTests` controleert registratie,
-de Guest-rol, login, cookies, logout en de afwijzing van elevated rollen bij
-publieke registratie.
+CSRF en schrijven als Editor en Admin. De volledige project-CRUD-cyclus
+`Identity_admin_can_complete_project_crud_cycle` gebruikt specifiek de
+Identity-login en controleert aanmaken, wijzigen, ophalen en verwijderen.
+`Identity_admin_can_create_a_blog_post` controleert bovendien dat de
+blogpostgegevens na `POST` via `GET` teruggelezen kunnen worden.
+`AuthApiTests` controleert registratie, de Guest-rol, login, cookies, logout en
+de afwijzing van elevated rollen bij publieke registratie. De suite bevat
+momenteel 28 tests.
+
+### Testmatrix
+
+De belangrijkste routegevallen zijn als volgt aan concrete xUnit-tests
+gekoppeld:
+
+| Route/geval | Verwacht resultaat | Test |
+| --- | --- | --- |
+| `GET /api/projects` en onbekend project-ID | `200` en `404` | `Public_project_get_routes_return_expected_results` |
+| `GET /api/blogposts` en bestaand blogpost-ID | `200` | `Public_blog_post_get_routes_return_expected_results` |
+| `POST /api/projects` zonder login | `401` | `Write_without_authentication_returns_unauthorized` |
+| `POST /api/projects` als Gast | `403` | `Guest_cannot_write_projects` |
+| `POST /api/projects` als Editor | `201` | `Editor_can_create_a_project` |
+| `POST /api/blogposts` als Identity Admin | `201` en opgeslagen gegevens | `Identity_admin_can_create_a_blog_post` |
+| Volledige project-CRUD als Admin | `201`, `204`, `200`, `204`, daarna `404` | `Admin_can_complete_project_crud_cycle` |
+| Volledige blogpost-CRUD als Admin | `201`, `204`, `200`, `204`, daarna `404` | `Admin_can_complete_blog_post_crud_cycle` |
+| Volledige project-CRUD via Identity | `201`, `204`, `200`, `204`, daarna `404` | `Identity_admin_can_complete_project_crud_cycle` |
+| `PUT`/`DELETE` met onbekend project-ID | `404` | `Updating_unknown_project_returns_not_found`, `Deleting_unknown_project_returns_not_found` |
+| `PUT`/`DELETE` met onbekend blogpost-ID | `404` | `Updating_unknown_blog_post_returns_not_found`, `Deleting_unknown_blog_post_returns_not_found` |
+
+Voer de volledige suite uit vanuit de repository-root:
+
+```powershell
+dotnet test .\tests\MauriceSinon.Api.Tests.csproj
+```
+
+Een geslaagde run eindigt met `Failed: 0` en `Passed: 28` (het exacte aantal
+kan stijgen wanneer later extra tests worden toegevoegd).
 
 ## Onderbouwing architectuur
 
