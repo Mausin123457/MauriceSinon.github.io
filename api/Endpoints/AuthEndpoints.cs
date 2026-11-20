@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using MauriceSinon.Api.Dtos;
 using MauriceSinon.Api.Identity;
@@ -68,6 +69,22 @@ public static class AuthEndpoints
         })
         .AllowAnonymous()
         .WithName("Login");
+
+        group.MapGet("/session", (ClaimsPrincipal user) =>
+        {
+            var roles = user.FindAll(ClaimTypes.Role)
+                .Select(claim => claim.Value)
+                .Distinct(StringComparer.Ordinal)
+                .ToArray();
+
+            return Results.Ok(new
+            {
+                username = user.Identity?.Name,
+                roles
+            });
+        })
+        .RequireAuthorization()
+        .WithName("GetSession");
 
         group.MapPost("/logout", async (
             SignInManager<ApplicationUser> signInManager,
