@@ -14,7 +14,12 @@ function App() {
             <Link to="/projects">Projecten</Link>
             <Link to="/blogposts">Blog</Link>
             {isLoading && <span> Sessie laden...</span>}
-            {!isLoading && !error && !session && <Link to="/login">Inloggen</Link>}
+            {!isLoading && !error && !session && (
+              <>
+                <Link to="/login">Inloggen</Link>
+                <Link to="/register">Registreren</Link>
+              </>
+            )}
             {!isLoading && !error && session && <span>Ingelogd als {session.username}</span>}
           </div>
         </nav>
