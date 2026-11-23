@@ -42,7 +42,11 @@ export async function apiFetch(path, options = {}) {
       credentials: 'include',
       headers,
     })
-  } catch {
+  } catch (error) {
+    if (error.name === 'AbortError') {
+      throw error
+    }
+
     throw new ApiError(0, 'De API is momenteel niet bereikbaar.')
   }
 

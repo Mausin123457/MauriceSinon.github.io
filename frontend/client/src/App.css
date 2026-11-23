@@ -50,3 +50,30 @@
   padding: 1rem 1.5rem;
   text-align: center;
 }
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+}
+
+.card {
+  padding: 1.5rem;
+  border: 1px solid #d9dee7;
+  border-radius: 0.5rem;
+  background: #ffffff;
+}
+
+.card h2 {
+  margin-top: 0.5rem;
+}
+
+.card-meta {
+  margin: 0;
+  color: #536078;
+  font-size: 0.9rem;
+}
+
+.long-content {
+  white-space: pre-wrap;
+}
