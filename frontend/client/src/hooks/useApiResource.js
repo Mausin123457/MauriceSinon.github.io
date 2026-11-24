@@ -7,6 +7,7 @@ export function useApiResource(path) {
     isLoading: true,
     error: null,
   })
+  const [reloadKey, setReloadKey] = useState(0)
 
   useEffect(() => {
     const controller = new AbortController()
@@ -34,7 +35,10 @@ export function useApiResource(path) {
       isCurrent = false
       controller.abort()
     }
-  }, [path])
+  }, [path, reloadKey])
 
-  return resource
+  return {
+    ...resource,
+    reload: () => setReloadKey((current) => current + 1),
+  }
 }
