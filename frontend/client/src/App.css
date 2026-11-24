@@ -4,6 +4,20 @@
   flex-direction: column;
 }
 
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -4rem;
+  z-index: 100;
+  padding: 0.75rem 1rem;
+  background: #172033;
+  color: #ffffff;
+}
+
+.skip-link:focus {
+  top: 1rem;
+}
+
 .site-header {
   border-bottom: 1px solid #d9dee7;
   background: #ffffff;
@@ -25,6 +39,8 @@
 
 .navigation-links {
   display: flex;
+  align-items: center;
+  flex-wrap: wrap;
   gap: 1rem;
 }
 
@@ -36,6 +52,26 @@
 .navigation a:hover,
 .navigation a:focus-visible {
   text-decoration: underline;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+a:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 3px;
+}
+
+button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.page-error {
+  max-width: 1100px;
+  width: calc(100% - 3rem);
+  margin: 1rem auto 0;
+  color: #8b1a1a;
 }
 
 .page-content {

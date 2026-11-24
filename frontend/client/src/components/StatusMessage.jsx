@@ -1,11 +1,11 @@
 export function LoadingMessage() {
-  return <p role="status">Bezig met laden...</p>
+  return <p role="status" aria-live="polite">Bezig met laden...</p>
 }
 
 export function EmptyMessage({ children = 'Geen resultaten gevonden.' }) {
-  return <p>{children}</p>
+  return <p role="status">{children}</p>
 }
 
 export function ErrorMessage({ children = 'Er is iets misgegaan.' }) {
-  return <p role="alert">{children}</p>
+  return <p role="alert" aria-live="assertive">{children}</p>
 }
