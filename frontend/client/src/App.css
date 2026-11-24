@@ -77,3 +77,32 @@
 .long-content {
   white-space: pre-wrap;
 }
+
+.auth-page {
+  max-width: 480px;
+}
+
+.auth-page form {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.auth-page input {
+  width: 100%;
+  padding: 0.65rem;
+  border: 1px solid #9aa5b8;
+  border-radius: 0.25rem;
+}
+
+.auth-page button,
+.navigation button,
+.button-link {
+  width: fit-content;
+  padding: 0.65rem 1rem;
+  border: 1px solid #172033;
+  border-radius: 0.25rem;
+  background: #172033;
+  color: #ffffff;
+  cursor: pointer;
+  text-decoration: none;
+}

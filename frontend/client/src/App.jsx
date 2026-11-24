@@ -1,9 +1,13 @@
 import { Link, Outlet } from 'react-router-dom'
-import { useAuth } from './AuthContext.jsx'
+import { useAuth } from './useAuth.js'
 import './App.css'
 
 function App() {
-  const { session, isLoading, error } = useAuth()
+  const { session, isLoading, error, logout } = useAuth()
+
+  const handleLogout = async () => {
+    await logout()
+  }
 
   return (
     <div className="app">
@@ -20,7 +24,12 @@ function App() {
                 <Link to="/register">Registreren</Link>
               </>
             )}
-            {!isLoading && !error && session && <span>Ingelogd als {session.username}</span>}
+            {!isLoading && !error && session && (
+              <>
+                <span>Ingelogd als {session.username} ({session.roles.join(', ')})</span>
+                <button type="button" onClick={handleLogout}>Uitloggen</button>
+              </>
+            )}
           </div>
         </nav>
       </header>

@@ -1,22 +1,6 @@
-import { createContext, useContext, useEffect, useState } from 'react'
-
-const AuthContext = createContext(null)
-
-async function getSession() {
-  const response = await fetch('/api/auth/session', {
-    credentials: 'include',
-  })
-
-  if (response.status === 401) {
-    return null
-  }
-
-  if (!response.ok) {
-    throw new Error('De huidige sessie kon niet worden opgehaald.')
-  }
-
-  return response.json()
-}
+import { useEffect, useState } from 'react'
+import { getAuthSession, login as loginRequest, logout as logoutRequest } from './api/authApi.js'
+import { AuthContext } from './AuthContextValue.js'
 
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(null)
@@ -26,7 +10,7 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     let isCurrent = true
 
-    getSession()
+    getAuthSession()
       .then((currentSession) => {
         if (isCurrent) {
           setSession(currentSession)
@@ -48,21 +32,36 @@ export function AuthProvider({ children }) {
     }
   }, [])
 
+  const refreshSession = async () => {
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      const currentSession = await getAuthSession()
+      setSession(currentSession)
+      return currentSession
+    } catch (sessionError) {
+      setError(sessionError)
+      throw sessionError
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const login = async (username, password) => {
+    await loginRequest(username, password)
+    return refreshSession()
+  }
+
+  const logout = async () => {
+    await logoutRequest()
+    setSession(null)
+    setError(null)
+  }
+
   return (
-    <AuthContext.Provider value={{ session, isLoading, error }}>
+    <AuthContext.Provider value={{ session, isLoading, error, login, logout, refreshSession }}>
       {children}
     </AuthContext.Provider>
   )
-}
-
-// The hook shares the context with AuthProvider by design.
-// oxlint-disable-next-line react/only-export-components
-export function useAuth() {
-  const context = useContext(AuthContext)
-
-  if (!context) {
-    throw new Error('useAuth moet binnen AuthProvider worden gebruikt.')
-  }
-
-  return context
 }

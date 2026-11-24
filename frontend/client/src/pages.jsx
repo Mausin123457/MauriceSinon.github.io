@@ -1,6 +1,9 @@
-import { Link, useParams } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ErrorMessage, EmptyMessage, LoadingMessage } from './components/StatusMessage.jsx'
 import { useApiResource } from './hooks/useApiResource.js'
+import { useAuth } from './useAuth.js'
+import { registerAccount } from './api/authApi.js'
 
 function formatDate(value) {
   return new Intl.DateTimeFormat('nl-NL', {
@@ -119,11 +122,126 @@ export function BlogDetailPage() {
 }
 
 export function LoginPage() {
-  return <section><h1>Inloggen</h1><p>Het loginformulier wordt in een volgende fase toegevoegd.</p></section>
+  const { login } = useAuth()
+  const navigate = useNavigate()
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+    setError(null)
+    setIsSubmitting(true)
+
+    try {
+      await login(username, password)
+      navigate('/')
+    } catch (loginError) {
+      setError(loginError)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  return (
+    <section className="auth-page">
+      <h1>Inloggen</h1>
+      <form onSubmit={handleSubmit}>
+        <label htmlFor="login-username">Gebruikersnaam</label>
+        <input
+          id="login-username"
+          name="username"
+          autoComplete="username"
+          value={username}
+          onChange={(event) => setUsername(event.target.value)}
+          required
+        />
+
+        <label htmlFor="login-password">Wachtwoord</label>
+        <input
+          id="login-password"
+          name="password"
+          type="password"
+          autoComplete="current-password"
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+          required
+        />
+
+        {error && <ErrorMessage>{error.message}</ErrorMessage>}
+        <button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? 'Inloggen...' : 'Inloggen'}
+        </button>
+      </form>
+      <p>Nog geen account? <Link to="/register">Registreren</Link></p>
+    </section>
+  )
 }
 
 export function RegisterPage() {
-  return <section><h1>Registreren</h1><p>Het registratieformulier wordt in een volgende fase toegevoegd.</p></section>
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState(null)
+  const [success, setSuccess] = useState(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+    setError(null)
+    setSuccess(null)
+    setIsSubmitting(true)
+
+    try {
+      await registerAccount(username, password)
+      setSuccess('Je account is aangemaakt als Gast.')
+      setUsername('')
+      setPassword('')
+    } catch (registrationError) {
+      setError(registrationError)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  return (
+    <section className="auth-page">
+      <h1>Registreren</h1>
+      <form onSubmit={handleSubmit}>
+        <label htmlFor="register-username">Gebruikersnaam</label>
+        <input
+          id="register-username"
+          name="username"
+          autoComplete="username"
+          minLength={3}
+          maxLength={100}
+          value={username}
+          onChange={(event) => setUsername(event.target.value)}
+          required
+        />
+
+        <label htmlFor="register-password">Wachtwoord</label>
+        <input
+          id="register-password"
+          name="password"
+          type="password"
+          autoComplete="new-password"
+          minLength={12}
+          maxLength={200}
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+          required
+        />
+
+        {error && <ErrorMessage>{error.details ? JSON.stringify(error.details) : error.message}</ErrorMessage>}
+        {success && <p role="status">{success}</p>}
+        <button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? 'Registreren...' : 'Registreren'}
+        </button>
+        {success && <Link to="/login" className="button-link">Naar inloggen</Link>}
+      </form>
+    </section>
+  )
 }
 
 export function NotFoundPage() {
