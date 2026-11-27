@@ -1,5 +1,6 @@
-using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
+using MauriceSinon.Api.Dtos;
 using MauriceSinon.Api.Identity;
 using MauriceSinon.Api.Security;
 
@@ -69,6 +70,22 @@ public static class AuthEndpoints
         .AllowAnonymous()
         .WithName("Login");
 
+        group.MapGet("/session", (ClaimsPrincipal user) =>
+        {
+            var roles = user.FindAll(ClaimTypes.Role)
+                .Select(claim => claim.Value)
+                .Distinct(StringComparer.Ordinal)
+                .ToArray();
+
+            return Results.Ok(new
+            {
+                username = user.Identity?.Name,
+                roles
+            });
+        })
+        .RequireAuthorization()
+        .WithName("GetSession");
+
         group.MapPost("/logout", async (
             SignInManager<ApplicationUser> signInManager,
             HttpContext httpContext) =>
@@ -81,23 +98,5 @@ public static class AuthEndpoints
         .WithName("Logout");
 
         return endpoints;
-    }
-
-    public sealed record RegistrationRequest
-    {
-        [Required, StringLength(100, MinimumLength = 3)]
-        public required string Username { get; init; }
-
-        [Required, StringLength(200, MinimumLength = 12)]
-        public required string Password { get; init; }
-    }
-
-    public sealed record LoginRequest
-    {
-        [Required, StringLength(100)]
-        public required string Username { get; init; }
-
-        [Required, StringLength(200)]
-        public required string Password { get; init; }
     }
 }

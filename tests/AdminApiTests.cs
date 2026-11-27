@@ -100,8 +100,19 @@ public sealed class AdminApiTests(ApiFactory factory) : IClassFixture<ApiFactory
         using var client = await CreateIdentityClient(IdentityRoles.Admin);
 
         var response = await client.PostAsJsonAsync("/api/blogposts", ValidBlogPost());
+        var post = await response.Content.ReadFromJsonAsync<BlogPostResponse>();
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        Assert.NotNull(post);
+        Assert.Equal("Test post", post!.Title);
+        Assert.Equal("A blog post created by an integration test.", post.Content);
+
+        var saved = await client.GetAsync($"/api/blogposts/{post.Id}");
+        Assert.Equal(HttpStatusCode.OK, saved.StatusCode);
+        var savedPost = await saved.Content.ReadFromJsonAsync<BlogPostResponse>();
+        Assert.Equal(post.Id, savedPost!.Id);
+        Assert.Equal(post.Title, savedPost.Title);
+        Assert.Equal(post.Content, savedPost.Content);
     }
 
     [Fact]
@@ -153,7 +164,7 @@ public sealed class AdminApiTests(ApiFactory factory) : IClassFixture<ApiFactory
     [Fact]
     public async Task Admin_can_complete_project_crud_cycle()
     {
-        using var client = CreateAuthenticatedClient();
+        using var client = await CreateIdentityClient(IdentityRoles.Admin);
         var create = await client.PostAsJsonAsync("/api/projects", ValidProject());
         var project = await create.Content.ReadFromJsonAsync<ProjectResponse>();
 
@@ -179,9 +190,14 @@ public sealed class AdminApiTests(ApiFactory factory) : IClassFixture<ApiFactory
     [Fact]
     public async Task Admin_can_complete_blog_post_crud_cycle()
     {
-        using var client = CreateAuthenticatedClient();
+        using var client = await CreateIdentityClient(IdentityRoles.Admin);
         var create = await client.PostAsJsonAsync("/api/blogposts", ValidBlogPost());
         var post = await create.Content.ReadFromJsonAsync<BlogPostResponse>();
+
+        Assert.Equal(HttpStatusCode.Created, create.StatusCode);
+        Assert.NotNull(post);
+        Assert.Equal("Test post", post!.Title);
+        Assert.Equal("A blog post created by an integration test.", post.Content);
 
         var update = await client.PutAsJsonAsync($"/api/blogposts/{post!.Id}", new
         {
@@ -197,8 +213,87 @@ public sealed class AdminApiTests(ApiFactory factory) : IClassFixture<ApiFactory
         Assert.Equal(HttpStatusCode.OK, updated.StatusCode);
         var saved = await updated.Content.ReadFromJsonAsync<BlogPostResponse>();
         Assert.Equal("Updated post", saved!.Title);
+        Assert.Equal("Updated content", saved.Content);
         Assert.Equal(HttpStatusCode.NoContent, delete.StatusCode);
         Assert.Equal(HttpStatusCode.NotFound, missing.StatusCode);
+    }
+
+    [Fact]
+    public async Task Identity_admin_can_complete_project_crud_cycle()
+    {
+        using var client = await CreateIdentityClient(IdentityRoles.Admin);
+        var create = await client.PostAsJsonAsync("/api/projects", ValidProject());
+        var project = await create.Content.ReadFromJsonAsync<ProjectResponse>();
+
+        var update = await client.PutAsJsonAsync($"/api/projects/{project!.Id}", new
+        {
+            title = "Identity updated project",
+            description = "Updated through Identity authentication.",
+            category = "Identity",
+            date = "2026-10-20T11:00:00Z"
+        });
+        var updated = await client.GetAsync($"/api/projects/{project.Id}");
+        var delete = await client.DeleteAsync($"/api/projects/{project.Id}");
+        var missing = await client.GetAsync($"/api/projects/{project.Id}");
+
+        Assert.Equal(HttpStatusCode.Created, create.StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, update.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, updated.StatusCode);
+        var saved = await updated.Content.ReadFromJsonAsync<ProjectResponse>();
+        Assert.Equal("Identity updated project", saved!.Title);
+        Assert.Equal(HttpStatusCode.NoContent, delete.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, missing.StatusCode);
+    }
+
+    [Fact]
+    public async Task Updating_unknown_project_returns_not_found()
+    {
+        using var client = CreateAuthenticatedClient();
+
+        var response = await client.PutAsJsonAsync("/api/projects/999999", new
+        {
+            title = "Unknown project",
+            description = "This project does not exist.",
+            category = "Testing",
+            date = "2026-10-20T11:00:00Z"
+        });
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Deleting_unknown_project_returns_not_found()
+    {
+        using var client = CreateAuthenticatedClient();
+
+        var response = await client.DeleteAsync("/api/projects/999999");
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Updating_unknown_blog_post_returns_not_found()
+    {
+        using var client = CreateAuthenticatedClient();
+
+        var response = await client.PutAsJsonAsync("/api/blogposts/999999", new
+        {
+            title = "Unknown post",
+            content = "This post does not exist.",
+            publicationDate = "2026-10-20T11:00:00Z"
+        });
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Deleting_unknown_blog_post_returns_not_found()
+    {
+        using var client = CreateAuthenticatedClient();
+
+        var response = await client.DeleteAsync("/api/blogposts/999999");
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
     [Fact]
@@ -298,5 +393,5 @@ public sealed class AdminApiTests(ApiFactory factory) : IClassFixture<ApiFactory
     };
 
     private sealed record ProjectResponse(int Id, string Title);
-    private sealed record BlogPostResponse(int Id, string Title);
+    private sealed record BlogPostResponse(int Id, string Title, string Content);
 }

@@ -1,0 +1,169 @@
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -4rem;
+  z-index: 100;
+  padding: 0.75rem 1rem;
+  background: #172033;
+  color: #ffffff;
+}
+
+.skip-link:focus {
+  top: 1rem;
+}
+
+.site-header {
+  border-bottom: 1px solid #d9dee7;
+  background: #ffffff;
+}
+
+.navigation {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.brand {
+  font-weight: 700;
+}
+
+.navigation-links {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.navigation a {
+  color: #172033;
+  text-decoration: none;
+}
+
+.navigation a:hover,
+.navigation a:focus-visible {
+  text-decoration: underline;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+a:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 3px;
+}
+
+button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.page-error {
+  max-width: 1100px;
+  width: calc(100% - 3rem);
+  margin: 1rem auto 0;
+  color: #8b1a1a;
+}
+
+.page-content {
+  width: min(1100px, calc(100% - 3rem));
+  margin: 0 auto;
+  padding: 3rem 0;
+  flex: 1;
+}
+
+.site-footer {
+  border-top: 1px solid #d9dee7;
+  padding: 1rem 1.5rem;
+  text-align: center;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+}
+
+.card {
+  padding: 1.5rem;
+  border: 1px solid #d9dee7;
+  border-radius: 0.5rem;
+  background: #ffffff;
+}
+
+.card h2 {
+  margin-top: 0.5rem;
+}
+
+.card-meta {
+  margin: 0;
+  color: #536078;
+  font-size: 0.9rem;
+}
+
+.long-content {
+  white-space: pre-wrap;
+}
+
+.auth-page {
+  max-width: 480px;
+}
+
+.auth-page form {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.auth-page input {
+  width: 100%;
+  padding: 0.65rem;
+  border: 1px solid #9aa5b8;
+  border-radius: 0.25rem;
+}
+
+.auth-page textarea {
+  width: 100%;
+  min-height: 10rem;
+  padding: 0.65rem;
+  border: 1px solid #9aa5b8;
+  border-radius: 0.25rem;
+}
+
+.auth-page button,
+.navigation button,
+.button-link {
+  width: fit-content;
+  padding: 0.65rem 1rem;
+  border: 1px solid #172033;
+  border-radius: 0.25rem;
+  background: #172033;
+  color: #ffffff;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.card-actions button {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #172033;
+  border-radius: 0.25rem;
+  background: #ffffff;
+  color: #172033;
+  cursor: pointer;
+}

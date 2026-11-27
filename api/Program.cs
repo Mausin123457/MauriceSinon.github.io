@@ -12,7 +12,10 @@ using MauriceSinon.Api.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.CustomSchemaIds(type => type.FullName!.Replace('+', '.'));
+});
 builder.Services.AddValidation();
 builder.Services.AddIdentityCore<ApplicationUser>(options =>
     {
@@ -117,7 +120,27 @@ using (var scope = app.Services.CreateScope())
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        options.UseRequestInterceptor("""
+            (request) => {
+                const csrfCookie = document.cookie
+                    .split("; ")
+                    .find((cookie) => cookie.startsWith("maurice-csrf="));
+                const method = request.method?.toUpperCase();
+                const requiresCsrf = ["POST", "PUT", "DELETE", "PATCH"].includes(method);
+                const isLoginRequest = request.url.endsWith("/api/auth/login") ||
+                    request.url.endsWith("/api/admin/login");
+
+                if (csrfCookie && requiresCsrf && !isLoginRequest) {
+                    request.headers["X-CSRF-TOKEN"] = decodeURIComponent(
+                        csrfCookie.substring("maurice-csrf=".length));
+                }
+
+                return request;
+            }
+            """);
+    });
 }
 app.UseDefaultFiles();
 app.UseStaticFiles();

@@ -1,7 +1,40 @@
 # Maurice Sinon portfolio
 
-Deze repository bevat de portfoliofrontend en de backend voor opdracht 3:
-een ASP.NET Core Minimal API met Entity Framework Core en SQL Server.
+Deze repository bevat een React-portfoliofrontend en een ASP.NET Core-backend
+met Entity Framework Core, SQL Server en ASP.NET Core Identity.
+
+## Lokale ontwikkeling in twee terminals
+
+Start eerst SQL Server Express. Vervolgens start je vanuit de
+repository-root in terminal 1 de API:
+
+```powershell
+cd api
+dotnet restore
+dotnet ef database update
+dotnet run
+```
+
+De API start standaard op `http://localhost:5106`. Swagger is lokaal beschikbaar
+op `http://localhost:5106/swagger`.
+
+Start in terminal 2 de React-app:
+
+```powershell
+cd frontend\client
+npm install
+npm run dev
+```
+
+De React-app start op `http://127.0.0.1:5173`. Vite stuurt aanvragen onder
+`/api` door naar `http://localhost:5106`, zodat React dezelfde lokale origin
+en dezelfde HttpOnly Identity-cookie gebruikt als de API.
+
+Voor de productie-build:
+
+```powershell
+npm run build
+```
 
 ## Backend starten
 
@@ -30,8 +63,8 @@ dotnet run
 De migration bevat zowel de portfolio-tabellen als de ASP.NET Core
 Identity-tabellen. De tests gebruiken een aparte InMemory-database.
 
-Open daarna `http://localhost:5000/swagger` (de exacte poort staat in de
-terminal). Swagger UI toont alle CRUD-endpoints.
+Open daarna `http://localhost:5106/swagger`. Swagger UI toont alle
+CRUD-endpoints.
 
 ## Gebruikers, rollen en authenticatie
 
@@ -93,25 +126,27 @@ adminconfiguratie voor productiegeheimen.
 
 ## Frontend en API
 
-De publieke project- en blogpagina's laden lokaal hun gegevens met `fetch()`
-uit de API. Lokaal gebruikt de frontend automatisch
-`http://localhost:5106`. Op GitHub Pages gebruikt de frontend voorlopig een
-statische lijst met objecten in `scripts/main.js`, omdat GitHub Pages alleen
-statische bestanden host en geen ASP.NET-backend uitvoert.
+De React-app bevindt zich in `frontend/client`. De publieke project- en
+blogpagina's laden hun gegevens via GET-routes uit de eigen API. In development
+gebruikt React `/api` en Vite de proxy naar `http://localhost:5106`.
 
-Je kunt de frontend daarvoor configureren vóór `scripts/main.js` wordt geladen:
+Voor een apart gehoste frontend kan `VITE_API_URL` worden ingesteld, bijvoorbeeld:
 
-```html
-<script>
-  window.PORTFOLIO_API_URL = "https://api.example.com";
-</script>
-<script type="module" src="./scripts/main.js"></script>
+```powershell
+$env:VITE_API_URL = "https://api.example.com"
+npm run dev
 ```
 
-Gebruik op pagina's in `pages/` het juiste relatieve pad naar `main.js`.
-Zolang `PORTFOLIO_API_URL` leeg is op een niet-lokale host, gebruikt de
-frontend deze statische fallbackdata. Zodra er later een publieke API is, kan
-`PORTFOLIO_API_URL` worden ingesteld om de API te gebruiken.
+Deze omgeving-URL is geen geheime sleutel en mag alleen een publieke
+API-origin bevatten. React gebruikt geen wachtwoord, secret of admin-key in
+frontendcode, localStorage of sessionStorage.
+
+Identity gebruikt in development een HttpOnly-cookie. Wijzigende API-verzoeken
+versturen het CSRF-token uit het `maurice-csrf`-cookie als
+`X-CSRF-TOKEN`-header. Voor HTTPS-deployment moeten cookies `Secure`,
+`SameSite=None` indien de origins cross-site zijn en, indien toepasbaar,
+een `__Host-`-prefix worden overwogen. CORS moet dan expliciet de juiste
+productie-origin bevatten.
 
 Swagger is alleen beschikbaar als de ASP.NET-host in de `Development`
 environment draait. Een GitHub Pages-deployment verandert de environment van
@@ -157,9 +192,42 @@ geeft HTTP 201 met een link naar het nieuwe item.
 De HTTP-dekking staat in het xUnit-project
 `tests/MauriceSinon.Api.Tests.csproj`. `AdminApiTests` controleert de tien
 CRUD-routecombinaties, publieke GETs, validatie, onbekende ids, `401`/`403`,
-CSRF en schrijven als Editor en Admin. `AuthApiTests` controleert registratie,
-de Guest-rol, login, cookies, logout en de afwijzing van elevated rollen bij
-publieke registratie.
+CSRF en schrijven als Editor en Admin. De volledige project-CRUD-cyclus
+`Identity_admin_can_complete_project_crud_cycle` gebruikt specifiek de
+Identity-login en controleert aanmaken, wijzigen, ophalen en verwijderen.
+`Identity_admin_can_create_a_blog_post` controleert bovendien dat de
+blogpostgegevens na `POST` via `GET` teruggelezen kunnen worden.
+`AuthApiTests` controleert registratie, de Guest-rol, login, cookies, logout en
+de afwijzing van elevated rollen bij publieke registratie. De suite bevat
+momenteel 30 tests.
+
+### Testmatrix
+
+De belangrijkste routegevallen zijn als volgt aan concrete xUnit-tests
+gekoppeld:
+
+| Route/geval | Verwacht resultaat | Test |
+| --- | --- | --- |
+| `GET /api/projects` en onbekend project-ID | `200` en `404` | `Public_project_get_routes_return_expected_results` |
+| `GET /api/blogposts` en bestaand blogpost-ID | `200` | `Public_blog_post_get_routes_return_expected_results` |
+| `POST /api/projects` zonder login | `401` | `Write_without_authentication_returns_unauthorized` |
+| `POST /api/projects` als Gast | `403` | `Guest_cannot_write_projects` |
+| `POST /api/projects` als Editor | `201` | `Editor_can_create_a_project` |
+| `POST /api/blogposts` als Identity Admin | `201` en opgeslagen gegevens | `Identity_admin_can_create_a_blog_post` |
+| Volledige project-CRUD als Admin | `201`, `204`, `200`, `204`, daarna `404` | `Admin_can_complete_project_crud_cycle` |
+| Volledige blogpost-CRUD als Admin | `201`, `204`, `200`, `204`, daarna `404` | `Admin_can_complete_blog_post_crud_cycle` |
+| Volledige project-CRUD via Identity | `201`, `204`, `200`, `204`, daarna `404` | `Identity_admin_can_complete_project_crud_cycle` |
+| `PUT`/`DELETE` met onbekend project-ID | `404` | `Updating_unknown_project_returns_not_found`, `Deleting_unknown_project_returns_not_found` |
+| `PUT`/`DELETE` met onbekend blogpost-ID | `404` | `Updating_unknown_blog_post_returns_not_found`, `Deleting_unknown_blog_post_returns_not_found` |
+
+Voer de volledige suite uit vanuit de repository-root:
+
+```powershell
+dotnet test .\tests\MauriceSinon.Api.Tests.csproj
+```
+
+Een geslaagde run eindigt met `Failed: 0` en `Passed: 30` (het exacte aantal
+kan stijgen wanneer later extra tests worden toegevoegd).
 
 ## Onderbouwing architectuur
 

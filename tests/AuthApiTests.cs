@@ -100,6 +100,36 @@ public sealed class AuthApiTests(ApiFactory factory) : IClassFixture<ApiFactory>
     }
 
     [Fact]
+    public async Task Session_returns_username_and_guest_role()
+    {
+        using var registered = await CreateRegisteredClient();
+        using var client = registered.Client;
+        var login = await client.PostAsJsonAsync("/api/auth/login", new
+        {
+            username = registered.Username,
+            password = "ValidPassword123!"
+        });
+        login.EnsureSuccessStatusCode();
+
+        var response = await client.GetAsync("/api/auth/session");
+        var session = await response.Content.ReadFromJsonAsync<SessionResponse>();
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(registered.Username, session!.Username);
+        Assert.Equal([IdentityRoles.Guest], session.Roles);
+    }
+
+    [Fact]
+    public async Task Session_without_login_returns_unauthorized()
+    {
+        using var client = factory.CreateClient();
+
+        var response = await client.GetAsync("/api/auth/session");
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
     public async Task Login_with_invalid_password_returns_unauthorized()
     {
         using var registered = await CreateRegisteredClient();
@@ -156,4 +186,5 @@ public sealed class AuthApiTests(ApiFactory factory) : IClassFixture<ApiFactory>
     }
 
     private sealed record CsrfResponse(string Token);
+    private sealed record SessionResponse(string Username, string[] Roles);
 }
